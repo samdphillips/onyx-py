@@ -38,6 +38,7 @@ class TestReader(unittest.TestCase):
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_id)
         self.assertEqual(t.name, 'abcd')
+        self.assert_at_end()
 
     def test_read_id_underscore(self):
         "ids can contain underscore"
@@ -45,6 +46,7 @@ class TestReader(unittest.TestCase):
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_id)
         self.assertEqual(t.name, '_abcd')
+        self.assert_at_end()
 
     def test_read_id_underscore_digit(self):
         "ids can contain underscore and digits"
@@ -52,6 +54,7 @@ class TestReader(unittest.TestCase):
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_id)
         self.assertEqual(t.name, 'a_1')
+        self.assert_at_end()
 
     def test_read_id_punct_exclaim(self):
         "ids can contain exclamation points"
@@ -59,6 +62,7 @@ class TestReader(unittest.TestCase):
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_id)
         self.assertEqual(t.name, 'mutate!')
+        self.assert_at_end()
 
     def test_read_id_punct_question(self):
         "ids can contain question marks"
@@ -66,6 +70,7 @@ class TestReader(unittest.TestCase):
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_id)
         self.assertEqual(t.name, 'really?')
+        self.assert_at_end()
 
     def test_read_keyword(self):
         "a keyword is an identifier with a ':' at the end"
