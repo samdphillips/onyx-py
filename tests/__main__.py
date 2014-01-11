@@ -76,9 +76,10 @@ class Coverage(TestPlugin):
 
 
 if __name__ == '__main__':
+    import sys
     tests = test_loader.discover('tests', top_level_dir='.')
     plugins = [Coverage(source=['onyx'])]
-    runner = TextTestRunner(resultclass=results_with_plugins(plugins))
+    runner = TextTestRunner(stream=sys.stdout, verbosity=2, resultclass=results_with_plugins(plugins))
     results = runner.run(tests)
     results.report()
 
