@@ -1,5 +1,7 @@
 
 
+import os.path
+
 from coverage import coverage
 from unittest import defaultTestLoader as test_loader, \
                      TestSuite, \
@@ -74,13 +76,43 @@ class Coverage(TestPlugin):
     def report(self):
         self._cov.report()
 
+def load_failed_tests():
+    tests = None
+    if os.path.exists('.test_failures'):
+        with open('.test_failures', 'r') as failfile:
+            names = [s.strip() for s in failfile]
+            tests = test_loader.loadTestsFromNames(names)
+    if tests is None or tests.countTestCases() == 0:
+        tests = load_all_tests()
+    return tests
+
+def load_all_tests():
+    return test_loader.discover('tests', top_level_dir='.')
 
 if __name__ == '__main__':
     import sys
-    tests = test_loader.discover('tests', top_level_dir='.')
+
+    from itertools import chain
+    from string import Template
+
+    if len(sys.argv) > 1 and sys.argv[1] == '-f':
+        tests = load_failed_tests()
+    else:
+        tests = load_all_tests()
+
     plugins = [Coverage(source=['onyx'])]
-    runner = TextTestRunner(stream=sys.stdout, verbosity=2, resultclass=results_with_plugins(plugins))
+    runner = TextTestRunner(stream=sys.stdout,
+                            verbosity=2,
+                            resultclass=results_with_plugins(plugins))
     results = runner.run(tests)
     results.report()
+
+    with open('.test_failures', 'w') as failfile:
+        t = Template('$module.$class.$method')
+        for failure, message in chain(results.failures, results.errors):
+            d ={'module': failure.__class__.__module__,
+                'class':  failure.__class__.__name__,
+                'method': failure._testMethodName}
+            print(t.substitute(d), file=failfile)
 
 
