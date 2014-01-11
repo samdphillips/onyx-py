@@ -6,9 +6,10 @@ import unittest
 class TestReader(unittest.TestCase):
     def init_reader(self, s):
         from onyx.util.stream import Stream
-        from onyx.reader import Reader
+        from onyx.reader import Reader, ReadError
         stream = Stream.from_sequence(s)
         self.reader = Reader(stream)
+        self.ReadError = ReadError
 
     def assert_at_end(self):
         if not self.reader.is_at_end():
@@ -79,4 +80,16 @@ class TestReader(unittest.TestCase):
         self.assertTrue(t.is_keyword)
         self.assertEqual(t.name, 'do:')
         self.assert_at_end()
+
+    def test_read_comments(self):
+        "read a plain old comment"
+        self.init_reader('"this is a comment"')
+        self.reader.read_comment()
+        self.assert_at_end()
+
+    def test_read_comment_error(self):
+        "an improperly terminated comment is bad"
+        self.init_reader('"this is a test')
+        with self.assertRaises(self.ReadError):
+            self.reader.read_comment()
 

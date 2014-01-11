@@ -45,6 +45,11 @@ _default_classifier.add_test('isspace', ['space'])
 _default_classifier.add_test('isalpha', ['idchar'])
 _default_classifier.add_test('isdigit', ['idchar', 'digit'])
 _default_classifier.add_chars('_!?', ['idchar'])
+_default_classifier.add_chars('"', ['comment'])
+
+
+class ReadError(Exception):
+    pass
 
 
 class Reader(object):
@@ -75,9 +80,25 @@ class Reader(object):
     def is_idchar(self):
         return 'idchar' in self.current_class()
 
+    def is_comment(self):
+        return 'comment' in self.current_class()
+
+    def is_eof(self):
+        return 'eof' in self.current_class()
+
     def read_space(self):
         while self.is_space():
             self.step()
+
+    def read_comment(self):
+        self.step()
+        while not self.is_eof() and not self.is_comment():
+            self.step()
+
+        if self.is_eof():
+            raise ReadError('eof encountered in comment')
+
+        self.step()
 
     def read_id_or_kw(self):
         s = ''
