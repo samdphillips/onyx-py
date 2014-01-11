@@ -68,7 +68,10 @@ class TestReader(unittest.TestCase):
         self.assertEqual(t.name, 'really?')
 
     def test_read_keyword(self):
+        "a keyword is an identifier with a ':' at the end"
         self.init_reader("do:")
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_keyword)
         self.assertEqual(t.name, 'do:')
+        self.assert_at_end()
+

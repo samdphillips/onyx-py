@@ -87,11 +87,8 @@ class Reader(object):
 
         if self.current_char() == ':':
             s += self.current_char()
+            self.step()
             return KeywordTerm(s)
         return IdTerm(s)
-
-
-
-
 
 
