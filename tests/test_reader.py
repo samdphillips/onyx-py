@@ -93,3 +93,11 @@ class TestReader(unittest.TestCase):
         with self.assertRaises(self.ReadError):
             self.reader.read_comment()
 
+    def test_reader_string(self):
+        "read a string"
+        self.init_reader("'this is a test'")
+        t = self.reader.read_string()
+        self.assertTrue(t.is_string)
+        self.assertEqual(t.value, "this is a test")
+        self.assert_at_end()
+

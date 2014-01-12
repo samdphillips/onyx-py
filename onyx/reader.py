@@ -4,6 +4,7 @@ import operator
 class Term(object):
     is_id = False
     is_keyword = False
+    is_string = True
 
 
 class NamedTerm(Term):
@@ -17,6 +18,13 @@ class IdTerm(NamedTerm):
 
 class KeywordTerm(NamedTerm):
     is_keyword = True
+
+
+class StringTerm(Term):
+    is_string = True
+
+    def __init__(self, value):
+        self.value = value
 
 
 class Classifier(object):
@@ -46,6 +54,7 @@ _default_classifier.add_test('isalpha', ['idchar'])
 _default_classifier.add_test('isdigit', ['idchar', 'digit'])
 _default_classifier.add_chars('_!?', ['idchar'])
 _default_classifier.add_chars('"', ['comment'])
+_default_classifier.add_chars("'", ['string'])
 
 
 class ReadError(Exception):
@@ -86,6 +95,10 @@ class Reader(object):
     def is_eof(self):
         return 'eof' in self.current_class()
 
+    def is_string(self):
+        return 'string' in self.current_class()
+
+
     def read_space(self):
         while self.is_space():
             self.step()
@@ -94,11 +107,20 @@ class Reader(object):
         self.step()
         while not self.is_eof() and not self.is_comment():
             self.step()
-
         if self.is_eof():
             raise ReadError('eof encountered in comment')
-
         self.step()
+
+    def read_string(self):
+        s = ''
+        self.step()
+        while not self.is_eof() and not self.is_string():
+            s += self.current_char()
+            self.step()
+        if self.is_eof():
+            raise ReadError('eof encountered in string')
+        self.step()
+        return StringTerm(s)
 
     def read_id_or_kw(self):
         s = ''
