@@ -4,7 +4,7 @@ import operator
 class Term(object):
     is_id = False
     is_keyword = False
-    is_string = True
+    is_string  = False
 
 
 class NamedTerm(Term):
