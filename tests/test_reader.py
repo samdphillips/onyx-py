@@ -101,3 +101,9 @@ class TestReader(unittest.TestCase):
         self.assertEqual(t.value, "this is a test")
         self.assert_at_end()
 
+    def test_read_string_error(self):
+        "an improperly terminated string is bad"
+        self.init_reader("'this is a test")
+        with self.assertRaises(self.ReadError):
+            self.reader.read_string()
+
