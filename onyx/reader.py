@@ -2,29 +2,14 @@
 import operator
 
 class Term(object):
-    is_id = False
+    is_id      = False
     is_keyword = False
     is_string  = False
+    is_binsel  = False
 
-
-class NamedTerm(Term):
-    def __init__(self, name):
-        self.name = name
-
-
-class IdTerm(NamedTerm):
-    is_id = True
-
-
-class KeywordTerm(NamedTerm):
-    is_keyword = True
-
-
-class StringTerm(Term):
-    is_string = True
-
-    def __init__(self, value):
+    def __init__(self, value, flag):
         self.value = value
+        setattr(self, 'is_%s' % flag, True)
 
 
 class Classifier(object):
@@ -120,7 +105,7 @@ class Reader(object):
         if self.is_eof():
             raise ReadError('eof encountered in string')
         self.step()
-        return StringTerm(s)
+        return Term(s, 'string')
 
     def read_id_or_kw(self):
         s = ''
@@ -128,10 +113,11 @@ class Reader(object):
             s += self.current_char()
             self.step()
 
+        kind = 'id'
         if self.current_char() == ':':
             s += self.current_char()
             self.step()
-            return KeywordTerm(s)
-        return IdTerm(s)
+            kind = 'keyword'
+        return Term(s, kind)
 
 

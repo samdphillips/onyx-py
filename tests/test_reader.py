@@ -38,7 +38,7 @@ class TestReader(unittest.TestCase):
         self.init_reader('abcd')
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_id)
-        self.assertEqual(t.name, 'abcd')
+        self.assertEqual(t.value, 'abcd')
         self.assert_at_end()
 
     def test_read_id_underscore(self):
@@ -46,7 +46,7 @@ class TestReader(unittest.TestCase):
         self.init_reader('_abcd')
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_id)
-        self.assertEqual(t.name, '_abcd')
+        self.assertEqual(t.value, '_abcd')
         self.assert_at_end()
 
     def test_read_id_underscore_digit(self):
@@ -54,7 +54,7 @@ class TestReader(unittest.TestCase):
         self.init_reader('a_1')
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_id)
-        self.assertEqual(t.name, 'a_1')
+        self.assertEqual(t.value, 'a_1')
         self.assert_at_end()
 
     def test_read_id_punct_exclaim(self):
@@ -62,7 +62,7 @@ class TestReader(unittest.TestCase):
         self.init_reader("mutate!")
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_id)
-        self.assertEqual(t.name, 'mutate!')
+        self.assertEqual(t.value, 'mutate!')
         self.assert_at_end()
 
     def test_read_id_punct_question(self):
@@ -70,7 +70,7 @@ class TestReader(unittest.TestCase):
         self.init_reader("really?")
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_id)
-        self.assertEqual(t.name, 'really?')
+        self.assertEqual(t.value, 'really?')
         self.assert_at_end()
 
     def test_read_keyword(self):
@@ -78,7 +78,7 @@ class TestReader(unittest.TestCase):
         self.init_reader("do:")
         t = self.reader.read_id_or_kw()
         self.assertTrue(t.is_keyword)
-        self.assertEqual(t.name, 'do:')
+        self.assertEqual(t.value, 'do:')
         self.assert_at_end()
 
     def test_read_comments(self):
