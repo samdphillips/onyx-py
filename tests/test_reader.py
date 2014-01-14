@@ -15,6 +15,11 @@ class TestReader(unittest.TestCase):
         if not self.reader.is_at_end():
             self.fail('reader is not at end')
 
+    def test_bad_attribute(self):
+        self.init_reader('')
+        with self.assertRaises(AttributeError):
+            self.reader.not_found
+
     def test_classify_eof(self):
         "reading at eof should produce the proper classification"
         self.init_reader('')

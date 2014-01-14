@@ -68,21 +68,15 @@ class Reader(object):
     def step(self):
         self._stream = self._stream.rest
 
-    def is_space(self):
-        return 'space' in self.current_class()
-
-    def is_idchar(self):
-        return 'idchar' in self.current_class()
-
-    def is_comment(self):
-        return 'comment' in self.current_class()
-
-    def is_eof(self):
-        return 'eof' in self.current_class()
-
-    def is_string(self):
-        return 'string' in self.current_class()
-
+    def __getattr__(self, name):
+        if name[:3] == 'is_':
+            char_class = name[3:]
+            def check_class():
+                return char_class in self.current_class()
+            setattr(self, name, check_class)
+            return check_class
+        raise AttributeError("%r object has no attribute %r" %
+                             (self.__class__.__name__, name))
 
     def read_space(self):
         while self.is_space():
