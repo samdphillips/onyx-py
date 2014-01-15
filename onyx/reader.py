@@ -40,6 +40,7 @@ _default_classifier.add_test('isdigit', ['idchar', 'digit'])
 _default_classifier.add_chars('_!?', ['idchar'])
 _default_classifier.add_chars('"', ['comment'])
 _default_classifier.add_chars("'", ['string'])
+_default_classifier.add_chars("~!@%&*-+=|\\?/<>,", ['binsel'])
 
 
 class ReadError(Exception):
@@ -113,5 +114,12 @@ class Reader(object):
             self.step()
             kind = 'keyword'
         return Term(s, kind)
+
+    def read_binsel(self):
+        s = ''
+        while self.is_binsel():
+            s += self.current_char()
+            self.step()
+        return Term(s, 'binsel')
 
 

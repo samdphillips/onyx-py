@@ -112,3 +112,28 @@ class TestReader(unittest.TestCase):
         with self.assertRaises(self.ReadError):
             self.reader.read_string()
 
+    def test_read_binary_selector(self):
+        "read a binary selector"
+        self.init_reader("+")
+        t = self.reader.read_binsel()
+        self.assertTrue(t.is_binsel)
+        self.assertEqual(t.value, "+")
+        self.assert_at_end()
+
+    def test_read_binary_selector2(self):
+        "read a binary selector"
+        self.init_reader("->")
+        t = self.reader.read_binsel()
+        self.assertTrue(t.is_binsel)
+        self.assertEqual(t.value, "->")
+        self.assert_at_end()
+
+    def test_read_binary_selector3(self):
+        "read a binary selector"
+        self.init_reader("==")
+        t = self.reader.read_binsel()
+        self.assertTrue(t.is_binsel)
+        self.assertEqual(t.value, "==")
+        self.assert_at_end()
+
+
