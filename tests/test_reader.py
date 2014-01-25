@@ -136,4 +136,18 @@ class TestReader(unittest.TestCase):
         self.assertEqual(t.value, "==")
         self.assert_at_end()
 
+    def test_read_term_skip_space(self):
+        "reading a term skips leading space"
+        self.init_reader("    ")
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
+    def test_read_term_skip_space_and_comments(self):
+        "reading a term skips leading space"
+        self.init_reader('    " test comment "    ')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
 

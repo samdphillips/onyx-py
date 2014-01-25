@@ -89,6 +89,23 @@ class Reader(object):
         raise AttributeError("%r object has no attribute %r" %
                              (self.__class__.__name__, name))
 
+    def read_term(self):
+        init_class = self.init_class()
+
+        while True:
+            if init_class == 'space':
+                self.read_space()
+            elif init_class == 'comment':
+                self.read_comment()
+            else:
+                break
+            init_class = self.init_class()
+
+        if init_class == 'eof':
+            return Term(None, 'eof')
+        raise ReadError('Unknown character: %s' %
+                repr(self.current_char()))
+
     def read_space(self):
         while self.is_space():
             self.step()
