@@ -17,7 +17,7 @@ class Classifier(object):
         self._classifiers = []
 
     def add_func(self, func, names):
-        self._classifiers.append((func, set(names)))
+        self._classifiers.append((func, names))
 
     def add_test(self, testname, names):
         self.add_func(operator.methodcaller(testname), names)
@@ -32,15 +32,20 @@ class Classifier(object):
                 cls.update(cl_names)
         return cls
 
+    def init_class(self, char):
+        for cl_func, cl_names in self._classifiers:
+            if cl_func(char):
+                return cl_names[0]
+
 
 _default_classifier = Classifier()
 _default_classifier.add_test('isspace', ['space'])
-_default_classifier.add_test('isalpha', ['idchar'])
-_default_classifier.add_test('isdigit', ['idchar', 'digit'])
-_default_classifier.add_chars('_!?', ['idchar'])
 _default_classifier.add_chars('"', ['comment'])
 _default_classifier.add_chars("'", ['string'])
+_default_classifier.add_test('isalpha', ['idchar'])
+_default_classifier.add_test('isdigit', ['digit', 'idchar'])
 _default_classifier.add_chars("~!@%&*-+=|\\?/<>,", ['binsel'])
+_default_classifier.add_chars('_!?', ['idchar'])
 
 
 class ReadError(Exception):
@@ -65,6 +70,11 @@ class Reader(object):
         if self.is_at_end():
             return set(['eof'])
         return self._classifier.classify(self.current_char())
+
+    def init_class(self):
+        if self.is_at_end():
+            return 'eof'
+        return self._classifier.init_class(self.current_char())
 
     def step(self):
         self._stream = self._stream.rest
