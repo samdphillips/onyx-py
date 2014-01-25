@@ -136,6 +136,14 @@ class TestReader(unittest.TestCase):
         self.assertEqual(t.value, "==")
         self.assert_at_end()
 
+    def test_read_integer(self):
+        "read a simple integer"
+        self.init_reader('12345')
+        t = self.reader.read_number()
+        self.assertTrue(t.is_integer)
+        self.assertEqual(t.value, 12345)
+        self.assert_at_end()
+
     def test_read_term_skip_space(self):
         "reading a term skips leading space"
         self.init_reader("    ")

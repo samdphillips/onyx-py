@@ -129,6 +129,13 @@ class Reader(object):
         self.step()
         return Term(s, 'string')
 
+    def read_number(self):
+        s = ''
+        while self.is_digit():
+            s += self.current_char()
+            self.step()
+        return Term(int(s), 'integer')
+
     def read_id_or_kw(self):
         s = ''
         while self.is_idchar():
