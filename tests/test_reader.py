@@ -158,4 +158,49 @@ class TestReader(unittest.TestCase):
         self.assertTrue(t.is_eof)
         self.assert_at_end()
 
+    def test_read_term_id(self):
+        self.init_reader('  abc123    ')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_id)
+        self.assertEqual(t.value, 'abc123')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
+    def test_read_term_keyword(self):
+        self.init_reader('  peek:    ')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_keyword)
+        self.assertEqual(t.value, 'peek:')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
+    def test_read_term_binsel(self):
+        self.init_reader('  ->    ')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_binsel)
+        self.assertEqual(t.value, '->')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
+    def test_read_term_number(self):
+        self.init_reader('  12345    ')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_integer)
+        self.assertEqual(t.value, 12345)
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
+    def test_read_term_string(self):
+        self.init_reader("  'test string'    ")
+        t = self.reader.read_term()
+        self.assertTrue(t.is_string)
+        self.assertEqual(t.value, "test string")
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
 

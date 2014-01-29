@@ -103,6 +103,15 @@ class Reader(object):
 
         if init_class == 'eof':
             return Term(None, 'eof')
+        elif init_class == 'idchar':
+            return self.read_id_or_kw()
+        elif init_class == 'binsel':
+            return self.read_binsel()
+        elif init_class == 'digit':
+            return self.read_number()
+        elif init_class == 'string':
+            return self.read_string()
+
         raise ReadError('Unknown character: %s' %
                 repr(self.current_char()))
 
