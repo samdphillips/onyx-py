@@ -213,4 +213,39 @@ class TestReader(unittest.TestCase):
         self.assertTrue(t.is_eof)
         self.assert_at_end()
 
+    def test_read_empty_curly(self):
+        self.init_reader("  {    }    ")
+        t = self.reader.read_term()
+        self.assertTrue(t.is_compound)
+        self.assertEqual(t.shape, '{}')
+        self.assertEqual(t.value, [])
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
+    def test_read_empty_parens(self):
+        self.init_reader("  (    )    ")
+        t = self.reader.read_term()
+        self.assertTrue(t.is_compound)
+        self.assertEqual(t.shape, '()')
+        self.assertEqual(t.value, [])
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
+    def test_read_unterminated_block(self):
+        self.init_reader("  [        ")
+        with self.assertRaises(self.ReadError):
+            self.reader.read_term()
+
+    def test_read_unterminated_curly(self):
+        self.init_reader("  {        ")
+        with self.assertRaises(self.ReadError):
+            self.reader.read_term()
+
+    def test_read_unterminated_parens(self):
+        self.init_reader("  (        ")
+        with self.assertRaises(self.ReadError):
+            self.reader.read_term()
+
 

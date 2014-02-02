@@ -47,7 +47,7 @@ _default_classifier.add_test('isalpha', ['idchar'])
 _default_classifier.add_test('isdigit', ['digit', 'idchar'])
 _default_classifier.add_chars("~!@%&*-+=|\\?/<>,", ['binsel'])
 _default_classifier.add_chars('_!?', ['idchar'])
-_default_classifier.add_chars('[{(', ['compound'])
+_default_classifier.add_chars('[{(', ['opener'])
 
 
 class ReadError(Exception):
@@ -56,7 +56,7 @@ class ReadError(Exception):
 
 class Reader(object):
     _classifier = _default_classifier
-    _enders = {'[': ']'}
+    _closers = {'[': ']', '(': ')', '{': '}'}
 
     def __init__(self, stream):
         self._stream = stream
@@ -117,7 +117,7 @@ class Reader(object):
             return self.read_number()
         elif init_class == 'string':
             return self.read_string()
-        elif init_class == 'compound':
+        elif init_class == 'opener':
             return self.read_compound()
 
         raise ReadError('Unknown character: %s (%s)' %
@@ -175,15 +175,19 @@ class Reader(object):
 
     def read_compound(self):
         start = self.current_char()
-        end = self._enders[start]
+        end = self._closers[start]
         self.step()
 
         terms = []
-        self.skip_spaces()
+        char_class = self.skip_spaces()
         while self.current_char() != end:
+            if self.is_eof():
+                raise ReadError('eof encountered in compound (%s)' %
+                        repr(start))
             t = self.read_term()
             terms.append(t)
-            self.skip_spaces()
+            char_class = self.skip_spaces()
+
         self.step()
         return Term(terms, 'compound', start+end)
 
