@@ -253,4 +253,15 @@ class TestReader(unittest.TestCase):
         with self.assertRaises(self.ReadError):
             self.reader.read_term()
 
+    def test_read_block(self):
+        self.init_reader("    [ 1 2 3 4 5 ]    ")
+        t = self.reader.read_term()
+        self.assertTrue(t.is_compound)
+        self.assertEqual(t.shape, '[]')
+        self.assertEqual(len(t.value), 5)
+        self.assertEqual([tt.value for tt in t.value], [1, 2, 3, 4, 5])
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
 
