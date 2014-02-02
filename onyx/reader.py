@@ -48,6 +48,7 @@ _default_classifier.add_test('isdigit', ['digit', 'idchar'])
 _default_classifier.add_chars("~!@%&*-+=|\\?/<>,", ['binsel'])
 _default_classifier.add_chars('_!?', ['idchar'])
 _default_classifier.add_chars('[{(', ['opener'])
+_default_classifier.add_chars(']})', ['closer'])
 
 
 class ReadError(Exception):
@@ -119,6 +120,9 @@ class Reader(object):
             return self.read_string()
         elif init_class == 'opener':
             return self.read_compound()
+        elif init_class == 'closer':
+            raise ReadError('unbalanced %s' %
+                    repr(self.current_char()))
 
         raise ReadError('Unknown character: %s (%s)' %
                 (repr(self.current_char()), init_class))

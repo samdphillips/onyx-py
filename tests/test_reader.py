@@ -248,4 +248,9 @@ class TestReader(unittest.TestCase):
         with self.assertRaises(self.ReadError):
             self.reader.read_term()
 
+    def test_read_wrong_closer(self):
+        self.init_reader("  ]  ")
+        with self.assertRaises(self.ReadError):
+            self.reader.read_term()
+
 
