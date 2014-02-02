@@ -89,7 +89,7 @@ class Reader(object):
         raise AttributeError("%r object has no attribute %r" %
                              (self.__class__.__name__, name))
 
-    def read_term(self):
+    def skip_spaces(self):
         init_class = self.init_class()
 
         while True:
@@ -98,8 +98,11 @@ class Reader(object):
             elif init_class == 'comment':
                 self.read_comment()
             else:
-                break
+                return init_class
             init_class = self.init_class()
+
+    def read_term(self):
+        init_class = self.skip_spaces()
 
         if init_class == 'eof':
             return Term(None, 'eof')
