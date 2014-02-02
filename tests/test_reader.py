@@ -203,4 +203,14 @@ class TestReader(unittest.TestCase):
         self.assertTrue(t.is_eof)
         self.assert_at_end()
 
+    def test_read_empty_block(self):
+        self.init_reader("  [    ]    ")
+        t = self.reader.read_term()
+        self.assertTrue(t.is_compound)
+        self.assertEqual(t.shape, '[]')
+        self.assertEqual(t.value, [])
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
 

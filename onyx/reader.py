@@ -7,8 +7,9 @@ class Term(object):
     is_string  = False
     is_binsel  = False
 
-    def __init__(self, value, flag):
+    def __init__(self, value, flag, shape=None):
         self.value = value
+        self.shape = shape
         setattr(self, 'is_%s' % flag, True)
 
 
@@ -46,6 +47,7 @@ _default_classifier.add_test('isalpha', ['idchar'])
 _default_classifier.add_test('isdigit', ['digit', 'idchar'])
 _default_classifier.add_chars("~!@%&*-+=|\\?/<>,", ['binsel'])
 _default_classifier.add_chars('_!?', ['idchar'])
+_default_classifier.add_chars('[{(', ['compound'])
 
 
 class ReadError(Exception):
@@ -54,6 +56,7 @@ class ReadError(Exception):
 
 class Reader(object):
     _classifier = _default_classifier
+    _enders = {'[': ']'}
 
     def __init__(self, stream):
         self._stream = stream
@@ -114,9 +117,11 @@ class Reader(object):
             return self.read_number()
         elif init_class == 'string':
             return self.read_string()
+        elif init_class == 'compound':
+            return self.read_compound()
 
-        raise ReadError('Unknown character: %s' %
-                repr(self.current_char()))
+        raise ReadError('Unknown character: %s (%s)' %
+                (repr(self.current_char()), init_class))
 
     def read_space(self):
         while self.is_space():
@@ -168,4 +173,17 @@ class Reader(object):
             self.step()
         return Term(s, 'binsel')
 
+    def read_compound(self):
+        start = self.current_char()
+        end = self._enders[start]
+        self.step()
+
+        terms = []
+        self.skip_spaces()
+        while self.current_char() != end:
+            t = self.read_term()
+            terms.append(t)
+            self.skip_spaces()
+        self.step()
+        return Term(terms, 'compound', start+end)
 
