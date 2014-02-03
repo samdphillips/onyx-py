@@ -121,7 +121,7 @@ class Reader(object):
         elif init_class == 'opener':
             return self.read_compound()
         elif init_class == 'closer':
-            raise ReadError('unbalanced %s' %
+            raise ReadError('unbalanced term: %s' %
                     repr(self.current_char()))
 
         raise ReadError('Unknown character: %s (%s)' %
