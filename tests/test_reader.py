@@ -264,4 +264,31 @@ class TestReader(unittest.TestCase):
         self.assertTrue(t.is_eof)
         self.assert_at_end()
 
+    def test_read_dot_delimiter(self):
+        self.init_reader("  .  ")
+        t = self.reader.read_term()
+        self.assertTrue(t.is_delimiter)
+        self.assertEqual(t.value, '.')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
+    def test_read_semicolon_delimiter(self):
+        self.init_reader("  ;  ")
+        t = self.reader.read_term()
+        self.assertTrue(t.is_delimiter)
+        self.assertEqual(t.value, ';')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
+    def test_read_carat_delimiter(self):
+        self.init_reader("  ^  ")
+        t = self.reader.read_term()
+        self.assertTrue(t.is_delimiter)
+        self.assertEqual(t.value, '^')
+        t = self.reader.read_term()
+        self.assertTrue(t.is_eof)
+        self.assert_at_end()
+
 

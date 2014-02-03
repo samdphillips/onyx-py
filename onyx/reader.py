@@ -46,6 +46,7 @@ _default_classifier.add_chars("'", ['string'])
 _default_classifier.add_test('isalpha', ['idchar'])
 _default_classifier.add_test('isdigit', ['digit', 'idchar'])
 _default_classifier.add_chars("~!@%&*-+=|\\?/<>,", ['binsel'])
+_default_classifier.add_chars(".;^", ['delimiter'])
 _default_classifier.add_chars('_!?', ['idchar'])
 _default_classifier.add_chars('[{(', ['opener'])
 _default_classifier.add_chars(']})', ['closer'])
@@ -118,6 +119,8 @@ class Reader(object):
             return self.read_number()
         elif init_class == 'string':
             return self.read_string()
+        elif init_class == 'delimiter':
+            return self.read_delimiter()
         elif init_class == 'opener':
             return self.read_compound()
         elif init_class == 'closer':
@@ -149,6 +152,11 @@ class Reader(object):
             raise ReadError('eof encountered in string')
         self.step()
         return Term(s, 'string')
+
+    def read_delimiter(self):
+        c = self.current_char()
+        self.step()
+        return Term(c, 'delimiter')
 
     def read_number(self):
         s = ''
