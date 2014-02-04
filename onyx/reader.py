@@ -2,10 +2,14 @@
 import operator
 
 class Term(object):
-    is_id      = False
-    is_keyword = False
-    is_string  = False
-    is_binsel  = False
+    is_id        = False
+    is_eof       = False
+    is_compound  = False
+    is_keyword   = False
+    is_string    = False
+    is_binsel    = False
+    is_integer   = False
+    is_delimiter = False
 
     def __init__(self, value, flag, shape=None):
         self.value = value
