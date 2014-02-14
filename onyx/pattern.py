@@ -20,6 +20,14 @@ class Match(object):
     def add_binding(self, binding):
         self._bindings[binding.name] = binding
 
+    def merge_bindings(self, matches):
+        for m in matches:
+            for binding in m.bindings():
+                self.add_binding(binding)
+
+    def bindings(self):
+        return self._bindings.values()
+
     def binding(self, name):
         return self._bindings.get(name)
 
@@ -60,5 +68,24 @@ class SimplePattern(object):
                 match.add_binding(Binding(self._bind, term))
             return match
         return FailedMatch(stream, self)
+
+
+class SequencePattern(object):
+    def __init__(self, patterns):
+        self._patterns = patterns
+
+    def match(self, stream):
+        matches = []
+
+        for pat in self._patterns:
+            submatch = pat.match(stream)
+            if submatch.is_failure:
+                return submatch
+            matches.append(submatch)
+            stream = submatch.after_stream
+
+        match = Match(stream)
+        match.merge_bindings(matches)
+        return match
 
 
