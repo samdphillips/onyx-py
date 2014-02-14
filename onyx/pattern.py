@@ -28,18 +28,24 @@ class FailedMatch(object):
 
 
 class SimplePattern(object):
-    def __init__(self, kind, bind=None):
-        self.kind = kind
-        self._bind = bind
+    def __init__(self, kind, value=None, bind=None):
+        self.kind   = kind
+        self._bind  = bind
+        self._value = value
         self.check_kind = op.attrgetter('is_%s' % kind)
 
-    def match(self, stream):
-        value = stream.first
+    def check_value(self, term):
+        if self._value is None:
+            return True
+        return term.value == self._value
 
-        if self.check_kind(value):
+    def match(self, stream):
+        term = stream.first
+
+        if self.check_kind(term) and self.check_value(term):
             match = Match(stream.rest)
             if self._bind is not None:
-                match.add_binding(self._bind, value)
+                match.add_binding(self._bind, term)
             return match
         return FailedMatch(stream, self)
 

@@ -43,4 +43,26 @@ class SimplePatternTests(unittest.TestCase):
         self.assertFalse(match.is_failure)
         self.assertEqual(t, match.binding_value('name'))
 
+    def test_value_pattern(self):
+        from onyx.pattern     import SimplePattern
+        from onyx.reader      import Term
+        from onyx.util.stream import Stream
 
+        pat = SimplePattern('identifier', value='class')
+        s = Stream.from_sequence([Term('class', 'identifier')])
+        match = pat.match(s)
+
+        self.assertTrue(match.is_success)
+        self.assertFalse(match.is_failure)
+
+    def test_wrong_value_pattern(self):
+        from onyx.pattern     import SimplePattern
+        from onyx.reader      import Term
+        from onyx.util.stream import Stream
+
+        pat = SimplePattern('identifier', value='class')
+        s = Stream.from_sequence([Term('a', 'identifier')])
+        match = pat.match(s)
+
+        self.assertTrue(match.is_failure)
+        self.assertFalse(match.is_success)
