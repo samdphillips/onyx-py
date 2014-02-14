@@ -3,6 +3,12 @@
 import operator as op
 
 
+class Binding(object):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+
 class Match(object):
     is_success = True
     is_failure = False
@@ -11,11 +17,17 @@ class Match(object):
         self._bindings = {}
         self.after_stream = after_stream
 
-    def add_binding(self, name, value):
-        self._bindings[name] = value
+    def add_binding(self, binding):
+        self._bindings[binding.name] = binding
+
+    def binding(self, name):
+        return self._bindings.get(name)
 
     def binding_value(self, name):
-        return self._bindings.get(name)
+        b = self.binding(name)
+        if b is not None:
+            return b.value
+        return None
 
 
 class FailedMatch(object):
@@ -45,7 +57,7 @@ class SimplePattern(object):
         if self.check_kind(term) and self.check_value(term):
             match = Match(stream.rest)
             if self._bind is not None:
-                match.add_binding(self._bind, term)
+                match.add_binding(Binding(self._bind, term))
             return match
         return FailedMatch(stream, self)
 
