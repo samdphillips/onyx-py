@@ -108,11 +108,7 @@ if __name__ == '__main__':
     results.report()
 
     with open('.test_failures', 'w') as failfile:
-        t = Template('$module.$class.$method')
         for failure, message in chain(results.failures, results.errors):
-            d ={'module': failure.__class__.__module__,
-                'class':  failure.__class__.__name__,
-                'method': failure._testMethodName}
-            print(t.substitute(d), file=failfile)
+            print(failure.id(), file=failfile)
 
 
