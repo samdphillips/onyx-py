@@ -3,8 +3,8 @@
 import os.path
 
 from coverage import coverage
-from unittest import defaultTestLoader as test_loader, \
-                     TestSuite, \
+from unittest import TestLoader as _TestLoader, \
+                     TestSuite as _TestSuite, \
                      TextTestResult, \
                      TextTestRunner
 
@@ -75,6 +75,20 @@ class Coverage(TestPlugin):
 
     def report(self):
         self._cov.report()
+
+
+class TestSuite(_TestSuite):
+    def addTest(self, test):
+        if not test.__class__.__name__.startswith('_'):
+            super().addTest(test)
+
+
+class TestLoader(_TestLoader):
+    suiteClass = TestSuite
+
+
+test_loader = TestLoader()
+
 
 def load_failed_tests():
     tests = None
