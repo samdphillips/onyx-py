@@ -2,7 +2,7 @@
 
 import unittest
 
-from onyx.term import Identifier
+from onyx.term import Identifier, UnarySend
 
 
 class _ParserTestCase(unittest.TestCase):
@@ -21,11 +21,18 @@ class _ParserTestCase(unittest.TestCase):
 
     def runTest(self):
         self.assertIsInstance(self.term, self.term_cls)
+        self.assertTrue(self.parser.stream.first.is_eof)
 
 
 class ParsePrimaryId(_ParserTestCase):
     read_string  = 'name'
     parse_method = 'primary'
     term_cls     = Identifier
+
+class ParsePrimaryUnary(_ParserTestCase):
+    read_string  = 'foo bar'
+    parse_method = 'primary'
+    term_cls     = UnarySend
+
 
 
