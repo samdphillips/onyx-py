@@ -1,4 +1,5 @@
 .env
 *.swp
+*.pyc
 __pycache__
 .test_failures
