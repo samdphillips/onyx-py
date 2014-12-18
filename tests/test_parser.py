@@ -19,9 +19,13 @@ class _ParserTestCase(unittest.TestCase):
     def shortDescription(self):
         return self.__class__.__doc__
 
+    def check(self):
+        pass
+
     def runTest(self):
         self.assertIsInstance(self.term, self.term_cls)
         self.assertTrue(self.parser.stream.first.is_eof)
+        self.check()
 
 
 class ParsePrimaryId(_ParserTestCase):
@@ -29,10 +33,16 @@ class ParsePrimaryId(_ParserTestCase):
     parse_method = 'primary'
     term_cls     = Identifier
 
+    def check(self):
+        self.assertEqual(self.term.name, 'name')
+
 class ParsePrimaryUnary(_ParserTestCase):
     read_string  = 'foo bar'
     parse_method = 'primary'
     term_cls     = UnarySend
 
-
+    def check(self):
+        self.assertIsInstance(self.term.receiver, Identifier)
+        self.assertEqual(self.term.receiver.name, 'foo')
+        self.assertEqual(self.term.message, 'bar')
 

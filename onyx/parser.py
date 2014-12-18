@@ -17,7 +17,7 @@ class Parser(object):
         self.step()
         next_term = self.stream.first
         if next_term.is_id:
-            term = UnarySend(term, next_term)
+            term = UnarySend(term, next_term.value)
             self.step()
         return term
 
