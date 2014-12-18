@@ -110,6 +110,13 @@ class Reader(object):
                 return init_class
             init_class = self.init_class()
 
+    def __iter__(self):
+        while True:
+            term = self.read_term()
+            yield term
+            if term.is_eof:
+                return
+
     def read_term(self):
         init_class = self.skip_spaces()
 
