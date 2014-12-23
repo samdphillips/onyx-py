@@ -15,8 +15,10 @@ class Parser(object):
         term = self.stream.first
         term = Identifier(term.value)
         self.step()
-        next_term = self.stream.first
-        if next_term.is_id:
+        while True:
+            next_term = self.stream.first
+            if not next_term.is_id:
+                break
             term = UnarySend(term, next_term.value)
             self.step()
         return term

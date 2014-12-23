@@ -46,3 +46,18 @@ class ParsePrimaryUnary(_ParserTestCase):
         self.assertEqual(self.term.receiver.name, 'foo')
         self.assertEqual(self.term.message, 'bar')
 
+
+class ParsePrimaryUnaryChain(_ParserTestCase):
+    read_string  = 'a b c'
+    parse_method = 'primary'
+    term_cls     = UnarySend
+
+    def check(self):
+        r = self.term.receiver
+        self.assertIsInstance(r, UnarySend)
+        self.assertIsInstance(r.receiver, Identifier)
+        self.assertEqual(r.receiver.name, 'a')
+        self.assertEqual(r.message, 'b')
+        self.assertEqual(self.term.message, 'c')
+
+
