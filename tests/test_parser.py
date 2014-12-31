@@ -2,7 +2,7 @@
 
 import unittest
 
-from onyx.term import Identifier, UnarySend
+from onyx.term import BinarySend, Identifier, UnarySend
 
 
 class _ParserTestCase(unittest.TestCase):
@@ -59,5 +59,35 @@ class ParsePrimaryUnaryChain(_ParserTestCase):
         self.assertEqual(r.receiver.name, 'a')
         self.assertEqual(r.message, 'b')
         self.assertEqual(self.term.message, 'c')
+
+
+class ParseBinaryPrimary(_ParserTestCase):
+    read_string  = 'a b'
+    parse_method = 'binary'
+    term_cls     = UnarySend
+
+    def check(self):
+        self.assertIsInstance(self.term.receiver, Identifier)
+        self.assertEqual(self.term.receiver.name, 'a')
+        self.assertEqual(self.term.message, 'b')
+
+
+class ParseBinaryBasic(_ParserTestCase):
+    read_string  = 'a + b'
+    parse_method = 'binary'
+    term_cls     = BinarySend
+
+    def check(self):
+        self.assertIsInstance(self.term.receiver, Identifier)
+        self.assertEqual(self.term.receiver.name, 'a')
+        self.assertEqual(self.term.message, '+')
+        self.assertIsInstance(self.term.arguments[0], Identifier)
+        self.assertEqual(self.term.arguments[0].name, 'b')
+
+
+class ParseBinaryExtended(_ParserTestCase):
+    read_string  = 'a + b * c'
+    parse_method = 'binary'
+    term_cls     = BinarySend
 
 

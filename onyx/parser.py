@@ -1,6 +1,6 @@
 
 
-from .term import Identifier, UnarySend
+from .term import BinarySend, Identifier, UnarySend
 from .util.stream import Stream
 
 
@@ -23,5 +23,17 @@ class Parser(object):
             self.step()
         return term
 
+    def parse_binary(self):
+        term = self.parse_primary()
+
+        while True:
+            next_term = self.stream.first
+            if not next_term.is_binsel:
+                break
+            message = next_term.value
+            self.step()
+            argument = self.parse_primary()
+            term = BinarySend(term, message, [argument])
+        return term
 
 
