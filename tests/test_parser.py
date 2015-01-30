@@ -28,6 +28,28 @@ class _ParserTestCase(unittest.TestCase):
         self.check()
 
 
+class _FailingParserTestCase(unittest.TestCase):
+    def setUp(self):
+        from onyx.util.stream import Stream
+        from onyx.parser import Parser
+        from onyx.reader import Reader
+        stream = Stream.from_sequence(self.read_string)
+        reader = Reader(stream)
+        self.parser = Parser(reader)
+
+    def shortDescription(self):
+        return self.__class__.__doc__
+
+    def check(self):
+        pass
+
+    def runTest(self):
+        from onyx.parser import ParseError
+        parse_method = getattr(self.parser, 'parse_' + self.parse_method)
+        with self.assertRaises(ParseError):
+            parse_method()
+
+
 class ParsePrimaryId(_ParserTestCase):
     read_string  = 'name'
     parse_method = 'primary'
@@ -35,6 +57,7 @@ class ParsePrimaryId(_ParserTestCase):
 
     def check(self):
         self.assertEqual(self.term.name, 'name')
+
 
 class ParsePrimaryUnary(_ParserTestCase):
     read_string  = 'foo bar'
@@ -89,5 +112,10 @@ class ParseBinaryExtended(_ParserTestCase):
     read_string  = 'a + b * c'
     parse_method = 'binary'
     term_cls     = BinarySend
+
+
+class ParseBinaryFailEnd(_FailingParserTestCase):
+    read_string  = 'a +'
+    parse_method = 'binary'
 
 

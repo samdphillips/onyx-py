@@ -1,7 +1,11 @@
 
 
 from .term import BinarySend, Identifier, UnarySend
-from .util.stream import Stream
+from .util.stream import EmptyStreamError, Stream
+
+
+class ParseError(Exception):
+    pass
 
 
 class Parser(object):
@@ -12,16 +16,20 @@ class Parser(object):
         self.stream = self.stream.rest
 
     def parse_primary(self):
-        term = self.stream.first
-        term = Identifier(term.value)
-        self.step()
-        while True:
-            next_term = self.stream.first
-            if not next_term.is_id:
-                break
-            term = UnarySend(term, next_term.value)
+        try:
+            term = self.stream.first
+            term = Identifier(term.value)
             self.step()
-        return term
+            while True:
+                next_term = self.stream.first
+                if not next_term.is_id:
+                    break
+                term = UnarySend(term, next_term.value)
+                self.step()
+            return term
+        except EmptyStreamError as e:
+            raise ParseError('End of stream encountered, expected primary', e)
+
 
     def parse_binary(self):
         term = self.parse_primary()
