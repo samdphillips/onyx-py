@@ -18,6 +18,8 @@ class Parser(object):
     def parse_primary(self):
         try:
             term = self.stream.first
+            if not term.is_id:
+                raise ParseError('Expected primary')
             term = Identifier(term.value)
             self.step()
             while True:

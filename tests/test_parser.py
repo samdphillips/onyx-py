@@ -114,6 +114,11 @@ class ParseBinaryExtended(_ParserTestCase):
     term_cls     = BinarySend
 
 
+class ParseBinaryFailStart(_FailingParserTestCase):
+    read_string  = '+ b'
+    parse_method = 'binary'
+
+
 class ParseBinaryFailEnd(_FailingParserTestCase):
     read_string  = 'a +'
     parse_method = 'binary'
