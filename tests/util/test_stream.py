@@ -56,7 +56,7 @@ class IteratorTests(unittest.TestCase):
         self.stream = Stream.from_sequence(range(10))
 
     def test_iterate_over_values(self):
-        for x,y in zip(self.stream, range(10)):
+        for x, y in zip(self.stream, range(10)):
             self.assertEqual(x, y)
         self.assertEqual(self.stream.first, 0)
 

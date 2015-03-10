@@ -7,8 +7,8 @@ class Identifier(object):
 
 class MessageSend(object):
     def __init__(self, receiver, message, arguments=[]):
-        self.receiver  = receiver
-        self.message   = message
+        self.receiver = receiver
+        self.message = message
         self.arguments = arguments
 
 

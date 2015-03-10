@@ -1,15 +1,15 @@
-
-
 import unittest
 
 from onyx.term import BinarySend, Identifier, UnarySend
 
 
+# noinspection PyPep8Naming
 class _ParserTestCase(object):
     def setUp(self):
         from onyx.util.stream import Stream
         from onyx.parser import Parser
         from onyx.reader import Reader
+
         stream = Stream.from_sequence(self.read_string)
         reader = Reader(stream)
         self.parser = Parser(reader)
@@ -28,11 +28,13 @@ class _ParserTestCase(object):
         self.check()
 
 
+# noinspection PyPep8Naming
 class _FailingParserTestCase(object):
     def setUp(self):
         from onyx.util.stream import Stream
         from onyx.parser import Parser
         from onyx.reader import Reader
+
         stream = Stream.from_sequence(self.read_string)
         reader = Reader(stream)
         self.parser = Parser(reader)
@@ -45,24 +47,25 @@ class _FailingParserTestCase(object):
 
     def runTest(self):
         from onyx.parser import ParseError
+
         parse_method = getattr(self.parser, 'parse_' + self.parse_method)
         with self.assertRaises(ParseError):
             parse_method()
 
 
 class ParsePrimaryId(_ParserTestCase, unittest.TestCase):
-    read_string  = 'name'
+    read_string = 'name'
     parse_method = 'primary'
-    term_cls     = Identifier
+    term_cls = Identifier
 
     def check(self):
         self.assertEqual(self.term.name, 'name')
 
 
 class ParsePrimaryUnary(_ParserTestCase, unittest.TestCase):
-    read_string  = 'foo bar'
+    read_string = 'foo bar'
     parse_method = 'primary'
-    term_cls     = UnarySend
+    term_cls = UnarySend
 
     def check(self):
         self.assertIsInstance(self.term.receiver, Identifier)
@@ -71,9 +74,9 @@ class ParsePrimaryUnary(_ParserTestCase, unittest.TestCase):
 
 
 class ParsePrimaryUnaryChain(_ParserTestCase, unittest.TestCase):
-    read_string  = 'a b c'
+    read_string = 'a b c'
     parse_method = 'primary'
-    term_cls     = UnarySend
+    term_cls = UnarySend
 
     def check(self):
         r = self.term.receiver
@@ -85,9 +88,9 @@ class ParsePrimaryUnaryChain(_ParserTestCase, unittest.TestCase):
 
 
 class ParseBinaryPrimary(_ParserTestCase, unittest.TestCase):
-    read_string  = 'a b'
+    read_string = 'a b'
     parse_method = 'binary'
-    term_cls     = UnarySend
+    term_cls = UnarySend
 
     def check(self):
         self.assertIsInstance(self.term.receiver, Identifier)
@@ -96,9 +99,9 @@ class ParseBinaryPrimary(_ParserTestCase, unittest.TestCase):
 
 
 class ParseBinaryBasic(_ParserTestCase, unittest.TestCase):
-    read_string  = 'a + b'
+    read_string = 'a + b'
     parse_method = 'binary'
-    term_cls     = BinarySend
+    term_cls = BinarySend
 
     def check(self):
         self.assertIsInstance(self.term.receiver, Identifier)
@@ -109,18 +112,18 @@ class ParseBinaryBasic(_ParserTestCase, unittest.TestCase):
 
 
 class ParseBinaryExtended(_ParserTestCase, unittest.TestCase):
-    read_string  = 'a + b * c'
+    read_string = 'a + b * c'
     parse_method = 'binary'
-    term_cls     = BinarySend
+    term_cls = BinarySend
 
 
 class ParseBinaryFailStart(_FailingParserTestCase, unittest.TestCase):
-    read_string  = '+ b'
+    read_string = '+ b'
     parse_method = 'binary'
 
 
 class ParseBinaryFailEnd(_FailingParserTestCase, unittest.TestCase):
-    read_string  = 'a +'
+    read_string = 'a +'
     parse_method = 'binary'
 
 

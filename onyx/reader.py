@@ -1,14 +1,15 @@
 
 import operator
 
+
 class Term(object):
-    is_id        = False
-    is_eof       = False
-    is_compound  = False
-    is_keyword   = False
-    is_string    = False
-    is_binsel    = False
-    is_integer   = False
+    is_id = False
+    is_eof = False
+    is_compound = False
+    is_keyword = False
+    is_string = False
+    is_binsel = False
+    is_integer = False
     is_delimiter = False
 
     def __init__(self, value, flag, shape=None):
@@ -24,8 +25,8 @@ class Classifier(object):
     def add_func(self, func, names):
         self._classifiers.append((func, names))
 
-    def add_test(self, testname, names):
-        self.add_func(operator.methodcaller(testname), names)
+    def add_test(self, test_name, names):
+        self.add_func(operator.methodcaller(test_name), names)
 
     def add_chars(self, chars, names):
         self.add_func(chars.__contains__, names)
@@ -91,6 +92,7 @@ class Reader(object):
     def __getattr__(self, name):
         if name[:3] == 'is_':
             char_class = name[3:]
+
             def check_class():
                 return char_class in self.current_class()
             setattr(self, name, check_class)
@@ -135,11 +137,10 @@ class Reader(object):
         elif init_class == 'opener':
             return self.read_compound()
         elif init_class == 'closer':
-            raise ReadError('unbalanced term: %s' %
-                    repr(self.current_char()))
+            raise ReadError('unbalanced term: %s' % repr(self.current_char()))
 
         raise ReadError('Unknown character: %s (%s)' %
-                (repr(self.current_char()), init_class))
+                        (repr(self.current_char()), init_class))
 
     def read_space(self):
         while self.is_space():
@@ -206,7 +207,7 @@ class Reader(object):
         while self.current_char() != end:
             if self.is_eof():
                 raise ReadError('eof encountered in compound (%s)' %
-                        repr(start))
+                                repr(start))
             t = self.read_term()
             terms.append(t)
             char_class = self.skip_spaces()

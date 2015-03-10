@@ -32,7 +32,6 @@ class Parser(object):
         except EmptyStreamError as e:
             raise ParseError('End of stream encountered, expected primary', e)
 
-
     def parse_binary(self):
         term = self.parse_primary()
 
