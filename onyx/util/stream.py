@@ -74,7 +74,7 @@ class Stream(object):
     def from_file(cls, filename):
         f = file(filename, 'r')
         it = CharIoIterator(f)
-        return cls.from_iterator(it)
+        return cls.from_sequence(it)
 
     def __init__(self, state):
         self._state = state
