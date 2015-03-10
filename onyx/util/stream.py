@@ -38,7 +38,7 @@ class PendingState(object):
 
     def force(self, stream):
         try:
-            v = self._iterator.__next__()
+            v = self._iterator.next()
             s = ValueState(v, self)
         except StopIteration:
             s = EMPTY
@@ -106,7 +106,7 @@ class CharIoIterator(object):
     def __iter__(self):
         return self
 
-    def __next__(self):
+    def next(self):
         c = self._io.read(1)
         if c == '':
             raise StopIteration

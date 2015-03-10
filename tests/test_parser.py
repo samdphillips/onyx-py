@@ -5,7 +5,7 @@ import unittest
 from onyx.term import BinarySend, Identifier, UnarySend
 
 
-class _ParserTestCase(unittest.TestCase):
+class _ParserTestCase(object):
     def setUp(self):
         from onyx.util.stream import Stream
         from onyx.parser import Parser
@@ -28,7 +28,7 @@ class _ParserTestCase(unittest.TestCase):
         self.check()
 
 
-class _FailingParserTestCase(unittest.TestCase):
+class _FailingParserTestCase(object):
     def setUp(self):
         from onyx.util.stream import Stream
         from onyx.parser import Parser
@@ -50,7 +50,7 @@ class _FailingParserTestCase(unittest.TestCase):
             parse_method()
 
 
-class ParsePrimaryId(_ParserTestCase):
+class ParsePrimaryId(_ParserTestCase, unittest.TestCase):
     read_string  = 'name'
     parse_method = 'primary'
     term_cls     = Identifier
@@ -59,7 +59,7 @@ class ParsePrimaryId(_ParserTestCase):
         self.assertEqual(self.term.name, 'name')
 
 
-class ParsePrimaryUnary(_ParserTestCase):
+class ParsePrimaryUnary(_ParserTestCase, unittest.TestCase):
     read_string  = 'foo bar'
     parse_method = 'primary'
     term_cls     = UnarySend
@@ -70,7 +70,7 @@ class ParsePrimaryUnary(_ParserTestCase):
         self.assertEqual(self.term.message, 'bar')
 
 
-class ParsePrimaryUnaryChain(_ParserTestCase):
+class ParsePrimaryUnaryChain(_ParserTestCase, unittest.TestCase):
     read_string  = 'a b c'
     parse_method = 'primary'
     term_cls     = UnarySend
@@ -84,7 +84,7 @@ class ParsePrimaryUnaryChain(_ParserTestCase):
         self.assertEqual(self.term.message, 'c')
 
 
-class ParseBinaryPrimary(_ParserTestCase):
+class ParseBinaryPrimary(_ParserTestCase, unittest.TestCase):
     read_string  = 'a b'
     parse_method = 'binary'
     term_cls     = UnarySend
@@ -95,7 +95,7 @@ class ParseBinaryPrimary(_ParserTestCase):
         self.assertEqual(self.term.message, 'b')
 
 
-class ParseBinaryBasic(_ParserTestCase):
+class ParseBinaryBasic(_ParserTestCase, unittest.TestCase):
     read_string  = 'a + b'
     parse_method = 'binary'
     term_cls     = BinarySend
@@ -108,18 +108,18 @@ class ParseBinaryBasic(_ParserTestCase):
         self.assertEqual(self.term.arguments[0].name, 'b')
 
 
-class ParseBinaryExtended(_ParserTestCase):
+class ParseBinaryExtended(_ParserTestCase, unittest.TestCase):
     read_string  = 'a + b * c'
     parse_method = 'binary'
     term_cls     = BinarySend
 
 
-class ParseBinaryFailStart(_FailingParserTestCase):
+class ParseBinaryFailStart(_FailingParserTestCase, unittest.TestCase):
     read_string  = '+ b'
     parse_method = 'binary'
 
 
-class ParseBinaryFailEnd(_FailingParserTestCase):
+class ParseBinaryFailEnd(_FailingParserTestCase, unittest.TestCase):
     read_string  = 'a +'
     parse_method = 'binary'
 

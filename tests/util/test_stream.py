@@ -65,12 +65,13 @@ class CharIoIteratorTests(unittest.TestCase):
     def setUp(self):
         from io import StringIO
         from onyx.util.stream import CharIoIterator
-        sio = StringIO('0123456789')
+        sio = StringIO(u'0123456789')
         self.cio_iter = CharIoIterator(sio)
 
     def test_iteration(self):
         s = '0123456789'
-        for c1, c2 in zip(self.cio_iter, s):
+        cio_iter = self.cio_iter
+        for c1, c2 in zip(cio_iter, s):
             self.assertEqual(c1, c2)
         
 

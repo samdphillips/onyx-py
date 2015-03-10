@@ -1,5 +1,7 @@
 .env
-*.swp
-*.pyc
-__pycache__
+.idea
 .test_failures
+*.iml
+*.pyc
+*.swp
+__pycache__

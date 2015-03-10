@@ -3,7 +3,7 @@
 import unittest
 
 
-class _ReaderTestCase(unittest.TestCase):
+class _ReaderTestCase(object):
     def init_reader(self, s):
         from onyx.util.stream import Stream
         from onyx.reader import Reader, ReadError
@@ -28,7 +28,7 @@ class _ReaderTestCase(unittest.TestCase):
 
 class _ReaderMethod(_ReaderTestCase):
     def setUp(self):
-        super().setUp()
+        super(_ReaderMethod, self).setUp()
         reader_method = getattr(self.reader, 'read_' + self.reader_method)
         self.term = reader_method()
 
@@ -66,7 +66,7 @@ class _ReadErrorTest(_ReaderTestCase):
             reader_method()
 
 
-class ReadSpace(_ReaderMethod):
+class ReadSpace(_ReaderMethod, unittest.TestCase):
     read_string = "    a"
     reader_method = "space"
 
@@ -75,7 +75,7 @@ class ReadSpace(_ReaderMethod):
         self.assertEqual(self.reader.current_char(), 'a')
 
 
-class ReadSpaceAtEnd(_ReadTerm):
+class ReadSpaceAtEnd(_ReadTerm, unittest.TestCase):
     read_string = "    "
     reader_method = "space"
 
@@ -84,38 +84,38 @@ class ReadSpaceAtEnd(_ReadTerm):
         self.assert_reader_at_end()
 
 
-class ReadNormalId(_ReadId):
+class ReadNormalId(_ReadId, unittest.TestCase):
     "ids can contain letters"
     read_string = "abcd"
 
 
-class ReadUnderscoreId(_ReadId):
+class ReadUnderscoreId(_ReadId, unittest.TestCase):
     "ids can contain underscore"
     read_string = '_abcd'
 
 
-class ReadIdUnderscoreDigit(_ReadId):
+class ReadIdUnderscoreDigit(_ReadId, unittest.TestCase):
     "ids can contain underscore and digits"
     read_string = 'a_1'
 
 
-class ReadIdPunctExclaim(_ReadId):
+class ReadIdPunctExclaim(_ReadId, unittest.TestCase):
     "ids can contain exclamation points"
     read_string = 'mutate!'
 
 
-class ReadIdPunctQuestion(_ReadId):
+class ReadIdPunctQuestion(_ReadId, unittest.TestCase):
     "ids can contain question marks"
     read_string = 'really?'
 
 
-class ReadKeyword(_ReadTerm):
+class ReadKeyword(_ReadTerm, unittest.TestCase):
     read_string   = 'do:'
     reader_method = 'id_or_kw'
     term_type     = 'keyword'
 
 
-class ReadComment(_ReaderMethod):
+class ReadComment(_ReaderMethod, unittest.TestCase):
     read_string   = '"this is a comment"'
     reader_method = 'comment'
 
@@ -124,39 +124,39 @@ class ReadComment(_ReaderMethod):
         self.assert_reader_at_end()
 
 
-class ReadCommentError(_ReadErrorTest):
+class ReadCommentError(_ReadErrorTest, unittest.TestCase):
     read_string = '"this is a test'
     reader_method = 'comment'
 
 
-class ReadString(_ReadTerm):
+class ReadString(_ReadTerm, unittest.TestCase):
     read_string   = "'this is a test'"
     reader_method = 'string'
     term_type     = 'string'
     term_value    = read_string[1:-1]
 
 
-class ReadStringError(_ReadErrorTest):
+class ReadStringError(_ReadErrorTest, unittest.TestCase):
     read_string   = "'this is a test"
     reader_method = 'string'
 
 
-class ReadBinarySelector1(_ReadBinsel):
+class ReadBinarySelector1(_ReadBinsel, unittest.TestCase):
     "read a binary selector"
     read_string = '+'
 
 
-class ReadBinarySelector2(_ReadBinsel):
+class ReadBinarySelector2(_ReadBinsel, unittest.TestCase):
     "read a binary selector"
     read_string = '->'
 
 
-class ReadBinarySelector3(_ReadBinsel):
+class ReadBinarySelector3(_ReadBinsel, unittest.TestCase):
     "read a binary selector"
     read_string = '==>'
 
 
-class ReadInteger(_ReadTerm):
+class ReadInteger(_ReadTerm, unittest.TestCase):
     "read a simple integer"
     read_string   = '12345'
     reader_method = 'number'
@@ -164,14 +164,14 @@ class ReadInteger(_ReadTerm):
     term_value    = 12345
 
 
-class ReadTermSkipSpace(_ReadTerm):
+class ReadTermSkipSpace(_ReadTerm, unittest.TestCase):
     "reading a term skips leading space"
     read_string   = '    '
     term_type     = 'eof'
     term_value    = None
 
 
-class ReadTermSkipSpaceComments(_ReadTerm):
+class ReadTermSkipSpaceComments(_ReadTerm, unittest.TestCase):
     "reading a term skips leading space"
     read_string   = '    " test comment "    '
     term_type     = 'eof'
@@ -190,97 +190,97 @@ class _ReadTerm1(_ReadTerm):
         self.assert_reader_at_end()
 
 
-class ReadTermId(_ReadTerm1):
+class ReadTermId(_ReadTerm1, unittest.TestCase):
     read_string = '    abc123    '
     term_type   = 'id'
     term_value  = 'abc123'
 
 
-class ReadTermKeyword(_ReadTerm1):
+class ReadTermKeyword(_ReadTerm1, unittest.TestCase):
     read_string = '    peek:    '
     term_type   = 'keyword'
     term_value  = 'peek:'
 
 
-class ReadTermBinsel(_ReadTerm1):
+class ReadTermBinsel(_ReadTerm1, unittest.TestCase):
     read_string = '    ->    '
     term_type   = 'binsel'
     term_value  = '->'
 
 
-class ReadTermNumber(_ReadTerm1):
+class ReadTermNumber(_ReadTerm1, unittest.TestCase):
     read_string = '    12345    '
     term_type   = 'integer'
     term_value  = 12345
 
 
-class ReadTermString(_ReadTerm1):
+class ReadTermString(_ReadTerm1, unittest.TestCase):
     read_string = "    'test string'    "
     term_type   = 'string'
     term_value  = 'test string'
 
 
-class ReadTermEmptyBlock(_ReadTerm1):
+class ReadTermEmptyBlock(_ReadTerm1, unittest.TestCase):
     read_string = '    [    ]    '
     term_type   = 'compound'
     term_value  = []
     term_shape  = '[]'
 
 
-class ReadTermEmptyCurly(_ReadTerm1):
+class ReadTermEmptyCurly(_ReadTerm1, unittest.TestCase):
     read_string = '    {    }    '
     term_type   = 'compound'
     term_value  = []
     term_shape  = '{}'
 
 
-class ReadTermEmptyParen(_ReadTerm1):
+class ReadTermEmptyParen(_ReadTerm1, unittest.TestCase):
     read_string = '    (    )    '
     term_type   = 'compound'
     term_value  = []
     term_shape  = '()'
 
 
-class ReadUnterminatedBlock(_ReadErrorTest):
+class ReadUnterminatedBlock(_ReadErrorTest, unittest.TestCase):
     read_string   = '    [    '
     reader_method = 'term'
 
 
-class ReadUnterminatedCurly(_ReadErrorTest):
+class ReadUnterminatedCurly(_ReadErrorTest, unittest.TestCase):
     read_string   = '    {    '
     reader_method = 'term'
 
 
-class ReadUnterminatedParen(_ReadErrorTest):
+class ReadUnterminatedParen(_ReadErrorTest, unittest.TestCase):
     read_string   = '    (    '
     reader_method = 'term'
 
 
-class ReadWrongCloser(_ReadErrorTest):
+class ReadWrongCloser(_ReadErrorTest, unittest.TestCase):
     read_string   = '    ]    '
     reader_method = 'term'
 
 
-class ReadBlock(_ReadTerm1):
+class ReadBlock(_ReadTerm1, unittest.TestCase):
     read_string = '    [ 1 2 3 4 5 ]    '
     term_type   = 'compound'
     term_shape  = '[]'
     term_value  = [1, 2, 3, 4, 5]
 
 
-class ReadTermDot(_ReadTerm1):
+class ReadTermDot(_ReadTerm1, unittest.TestCase):
     read_string = '    .    '
     term_type   = 'delimiter'
     term_value  = '.'
 
 
-class ReadTermSemicolon(_ReadTerm1):
+class ReadTermSemicolon(_ReadTerm1, unittest.TestCase):
     read_string = '    ;    '
     term_type   = 'delimiter'
     term_value  = ';'
 
 
-class ReadTermCarat(_ReadTerm1):
+class ReadTermCarat(_ReadTerm1, unittest.TestCase):
     read_string = '    ^    '
     term_type   = 'delimiter'
     term_value  = '^'
