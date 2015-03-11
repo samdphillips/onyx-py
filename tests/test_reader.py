@@ -317,7 +317,7 @@ class ReadCurrentClassEof(unittest.TestCase):
 
     def runTest(self):
         """reading at eof should produce the proper classification"""
-        self.assertEqual(set(['eof']), self.reader.current_class())
+        self.assertEqual({'eof'}, self.reader.current_class())
         self.assert_reader_at_end()
 
 

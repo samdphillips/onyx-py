@@ -78,7 +78,7 @@ class Reader(object):
 
     def current_class(self):
         if self.is_at_end():
-            return set(['eof'])
+            return {'eof'}
         return self._classifier.classify(self.current_char())
 
     def init_class(self):
