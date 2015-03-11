@@ -1,6 +1,6 @@
 
 
-from .term import BinarySend, Identifier, UnarySend
+from .term import BinarySend, Identifier, KeywordSend, UnarySend
 from .util.stream import EmptyStreamError, Stream
 
 
@@ -45,4 +45,22 @@ class Parser(object):
             term = BinarySend(term, message, [argument])
         return term
 
+    def parse_keyword(self):
+        term = self.parse_binary()
+        message_parts = []
+        arguments = []
+        while True:
+            next_term = self.stream.first
+            if not next_term.is_keyword:
+                break
+            part = next_term.value
+            self.step()
+            argument = self.parse_binary()
+            message_parts.append(part)
+            arguments.append(argument)
+
+        if message_parts != []:
+            message = ''.join(message_parts)
+            term = KeywordSend(term, message, arguments)
+        return term
 

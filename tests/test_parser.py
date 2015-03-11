@@ -1,6 +1,6 @@
 import unittest
 
-from onyx.term import BinarySend, Identifier, UnarySend
+from onyx.term import BinarySend, Identifier, KeywordSend, UnarySend
 
 
 # noinspection PyPep8Naming
@@ -126,4 +126,31 @@ class ParseBinaryFailEnd(_FailingParserTestCase, unittest.TestCase):
     read_string = 'a +'
     parse_method = 'binary'
 
+
+class ParseKeywordPrimary(_ParserTestCase, unittest.TestCase):
+    read_string = 'a b c'
+    parse_method = 'keyword'
+    term_cls = UnarySend
+
+
+class ParseKeywordBinary(_ParserTestCase, unittest.TestCase):
+    read_string = 'a + c'
+    parse_method = 'keyword'
+    term_cls = BinarySend
+
+
+class ParseKeywordBasic(_ParserTestCase, unittest.TestCase):
+    read_string = 'a foo: b'
+    parse_method = 'keyword'
+    term_cls = KeywordSend
+
+
+class ParseKeywordFailStart(_FailingParserTestCase, unittest.TestCase):
+    read_string = 'foo: bar'
+    parse_method = 'keyword'
+
+
+class ParseKeywordFailEnd(_FailingParserTestCase, unittest.TestCase):
+    read_string = 'foo bar:'
+    parse_method = 'keyword'
 

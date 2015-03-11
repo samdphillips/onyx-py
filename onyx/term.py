@@ -22,3 +22,6 @@ class BinarySend(MessageSend):
     pass
 
 
+class KeywordSend(MessageSend):
+    pass
+
