@@ -6,9 +6,11 @@ class Identifier(object):
 
 
 class MessageSend(object):
-    def __init__(self, receiver, message, arguments=[]):
+    def __init__(self, receiver, message, arguments=None):
         self.receiver = receiver
         self.message = message
+        if arguments is None:
+            arguments = []
         self.arguments = arguments
 
 
