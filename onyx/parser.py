@@ -45,7 +45,7 @@ class Parser(object):
                 raise ParseError('Expected primary')
             term = Identifier(term.value)
             self.step()
-            while True:
+            while not self.at_end():
                 next_term = self.stream.first
                 if not next_term.is_id:
                     break
@@ -58,7 +58,7 @@ class Parser(object):
     def parse_binary(self):
         term = self.parse_primary()
 
-        while True:
+        while not self.at_end():
             next_term = self.stream.first
             if not next_term.is_binsel:
                 break
@@ -72,7 +72,7 @@ class Parser(object):
         term = self.parse_binary()
         message_parts = []
         arguments = []
-        while True:
+        while not self.at_end():
             next_term = self.stream.first
             if not next_term.is_keyword:
                 break
@@ -101,7 +101,7 @@ class Parser(object):
             self.step()
         elif term.is_keyword:
             name = []
-            while True:
+            while not self.at_end():
                 term = self.stream.first
                 if not term.is_keyword:
                     break

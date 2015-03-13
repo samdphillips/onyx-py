@@ -27,7 +27,7 @@ class _ParserTestCase(object):
     def runTest(self):
         if self.term_cls is not None:
             self.assertIsInstance(self.term, self.term_cls)
-        self.assertTrue(self.parser.stream.first.is_eof)
+        self.assertTrue(self.parser.at_end())
         self.check()
 
 

@@ -99,11 +99,13 @@ class Reader(object):
             init_class = self.init_class()
 
     def __iter__(self):
-        while True:
-            term = self.read_term()
-            yield term
-            if term.is_eof:
-                return
+        return self
+
+    def next(self):
+        term = self.read_term()
+        if term.is_eof:
+            raise StopIteration
+        return term
 
     def read_term(self):
         init_class = self.skip_spaces()
