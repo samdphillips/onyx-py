@@ -101,7 +101,11 @@ class ParsePrimaryUnaryChain(_ParserTestCase, unittest.TestCase):
         self.assertEqual(self.term.message, 'c')
 
 
-class ParseBinaryPrimary(ParsePrimaryUnaryChain, unittest.TestCase):
+class ParseBinaryPrimaryId(ParsePrimaryId, unittest.TestCase):
+    parse_method = 'binary'
+
+
+class ParseBinaryUnaryChain(ParsePrimaryUnaryChain, unittest.TestCase):
     parse_method = 'binary'
 
 
