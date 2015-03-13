@@ -5,6 +5,8 @@ from onyx.term import BinarySend, Identifier, KeywordSend, UnarySend
 
 # noinspection PyPep8Naming
 class _ParserTestCase(object):
+    term_cls = None
+
     def setUp(self):
         from onyx.util.stream import Stream
         from onyx.parser import Parser
@@ -23,7 +25,8 @@ class _ParserTestCase(object):
         pass
 
     def runTest(self):
-        self.assertIsInstance(self.term, self.term_cls)
+        if self.term_cls is not None:
+            self.assertIsInstance(self.term, self.term_cls)
         self.assertTrue(self.parser.stream.first.is_eof)
         self.check()
 
@@ -153,4 +156,38 @@ class ParseKeywordFailStart(_FailingParserTestCase, unittest.TestCase):
 class ParseKeywordFailEnd(_FailingParserTestCase, unittest.TestCase):
     read_string = 'foo bar:'
     parse_method = 'keyword'
+
+
+class ParseUnaryMethodHeader(_ParserTestCase, unittest.TestCase):
+    read_string = 'foo'
+    parse_method = 'method_header'
+
+    def check(self):
+        name, arguments = self.term
+        self.assertEqual('foo', name)
+        self.assertEqual([], arguments)
+
+
+class ParseBinaryMethodHeader(_ParserTestCase, unittest.TestCase):
+    read_string = '+ aNumber'
+    parse_method = 'method_header'
+
+    def check(self):
+        name, arguments = self.term
+        self.assertEqual('+', name)
+        self.assertEqual(1, len(arguments))
+        self.assertIsInstance(arguments[0], Identifier)
+        self.assertEqual('aNumber', arguments[0].name)
+
+
+class ParseKeywordMethodHeader(_ParserTestCase, unittest.TestCase):
+    read_string = 'do: aBlock'
+    parse_method = 'method_header'
+
+    def check(self):
+        name, arguments = self.term
+        self.assertEqual('do:', name)
+        self.assertEqual(1, len(arguments))
+        self.assertIsInstance(arguments[0], Identifier)
+        self.assertEqual('aBlock', arguments[0].name)
 

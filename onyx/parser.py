@@ -87,3 +87,33 @@ class Parser(object):
             term = KeywordSend(term, message, arguments)
         return term
 
+    def parse_method_header(self):
+        term = self.stream.first
+        arguments = []
+        if term.is_id:
+            name = term.value
+            self.step()
+        elif term.is_binsel:
+            name = term.value
+            self.step()
+            self.assert_term_kind('is_id')
+            arguments.append(self.stream.first.as_identifier())
+            self.step()
+        elif term.is_keyword:
+            name = []
+            while True:
+                term = self.stream.first
+                if not term.is_keyword:
+                    break
+                name.append(term.value)
+                self.step()
+                self.assert_term_kind('is_id')
+                arguments.append(self.stream.first.as_identifier())
+                self.step()
+            name = ''.join(name)
+        else:
+            raise ParseError(
+                "Expected id, binary selector, or keyword. "
+                "got: {0}".format(term))
+        return name, arguments
+
