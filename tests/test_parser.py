@@ -53,6 +53,17 @@ class _FailingParserTestCase(object):
             parse_method()
 
 
+class TermTestCase(unittest.TestCase):
+    def runTest(self):
+        from onyx.term import Term, TermError
+        term = Term('Object', 'id')
+        id_term = term.as_identifier()
+        self.assertIsInstance(id_term, Identifier)
+
+        with self.assertRaises(TermError):
+            term = Term('+', 'binsel')
+            term.as_identifier()
+
 class ParsePrimaryId(_ParserTestCase, unittest.TestCase):
     read_string = 'name'
     parse_method = 'primary'
