@@ -87,15 +87,8 @@ class ParsePrimaryUnaryChain(_ParserTestCase, unittest.TestCase):
         self.assertEqual(self.term.message, 'c')
 
 
-class ParseBinaryPrimary(_ParserTestCase, unittest.TestCase):
-    read_string = 'a b'
+class ParseBinaryPrimary(ParsePrimaryUnaryChain, unittest.TestCase):
     parse_method = 'binary'
-    term_cls = UnarySend
-
-    def check(self):
-        self.assertIsInstance(self.term.receiver, Identifier)
-        self.assertEqual(self.term.receiver.name, 'a')
-        self.assertEqual(self.term.message, 'b')
 
 
 class ParseBinaryBasic(_ParserTestCase, unittest.TestCase):
@@ -127,16 +120,12 @@ class ParseBinaryFailEnd(_FailingParserTestCase, unittest.TestCase):
     parse_method = 'binary'
 
 
-class ParseKeywordPrimary(_ParserTestCase, unittest.TestCase):
-    read_string = 'a b c'
+class ParseKeywordPrimary(ParsePrimaryUnaryChain, unittest.TestCase):
     parse_method = 'keyword'
-    term_cls = UnarySend
 
 
-class ParseKeywordBinary(_ParserTestCase, unittest.TestCase):
-    read_string = 'a + c'
+class ParseKeywordBinary(ParseBinaryBasic, unittest.TestCase):
     parse_method = 'keyword'
-    term_cls = BinarySend
 
 
 class ParseKeywordBasic(_ParserTestCase, unittest.TestCase):
