@@ -13,6 +13,7 @@ class Term(object):
     is_binsel = False
     is_integer = False
     is_delimiter = False
+    is_assignment = False
 
     def __init__(self, value, flag, shape=None):
         self.value = value

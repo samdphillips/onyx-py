@@ -33,6 +33,7 @@ _default_classifier = Classifier()
 _default_classifier.add_test('isspace', ['space'])
 _default_classifier.add_chars('"', ['comment'])
 _default_classifier.add_chars("'", ['string'])
+_default_classifier.add_chars(":", ['assignment'])
 _default_classifier.add_test('isalpha', ['idchar'])
 _default_classifier.add_test('isdigit', ['digit', 'idchar'])
 _default_classifier.add_chars("~!@%&*-+=|\\?/<>,", ['binsel'])
@@ -119,6 +120,8 @@ class Reader(object):
             return self.read_string()
         elif init_class == 'delimiter':
             return self.read_delimiter()
+        elif init_class == 'assignment':
+            return self.read_assignment()
         elif init_class == 'opener':
             return self.read_compound()
         elif init_class == 'closer':
@@ -181,6 +184,11 @@ class Reader(object):
             s += self.current_char()
             self.step()
         return Term(s, 'binsel')
+
+    def read_assignment(self):
+        self.step()
+        self.step()
+        return Term(None, 'assignment')
 
     def read_compound(self):
         start = self.current_char()

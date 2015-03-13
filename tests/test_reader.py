@@ -166,6 +166,14 @@ class ReadInteger(_ReadTerm, unittest.TestCase):
     term_value = 12345
 
 
+class ReadAssign(_ReadTerm, unittest.TestCase):
+    """read an assignment term"""
+    read_string = ":="
+    reader_method = "assignment"
+    term_type = 'assignment'
+    term_value = None
+
+
 class ReadTermSkipSpace(_ReadTerm, unittest.TestCase):
     """reading a term skips leading space"""
     read_string = '    '
@@ -286,6 +294,12 @@ class ReadTermCarat(_ReadTerm1, unittest.TestCase):
     read_string = '    ^    '
     term_type = 'delimiter'
     term_value = '^'
+
+
+class ReadTermAssignment(_ReadTerm1, unittest.TestCase):
+    read_string = '    :=    '
+    term_type = 'assignment'
+    term_value = None
 
 
 class ReaderBadAttr(unittest.TestCase):
