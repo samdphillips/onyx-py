@@ -18,6 +18,11 @@ class Parser(object):
     def at_end(self):
         return self.stream.is_empty
 
+    def assert_at_end(self):
+        if not self.at_end():
+            raise ParseError(
+                "Expected no more terms.  Got: {0}".format(self.stream.first))
+
     def assert_term_value(self, value):
         term = self.stream.first
         term_value = term.value
@@ -38,12 +43,26 @@ class Parser(object):
             raise ParseError(
                 "Expected term kind {0!r}, got: {1}".format(kind, term))
 
+    def make_sub_parser(self, shape):
+        self.assert_term_compound(shape)
+        parser = self.__class__(self.stream.first.value)
+        return parser
+
     def parse_primary(self):
         try:
             term = self.stream.first
-            if not term.is_id:
+
+            if term.is_id:
+                term = Identifier(term.value)
+            elif term.is_compound:
+                if term.shape == '()':
+                    parser = self.make_sub_parser('()')
+                    term = parser.parse_expression()
+                    parser.assert_at_end()
+                else:
+                    raise ParseError('should write this...')
+            else:
                 raise ParseError('Expected primary')
-            term = Identifier(term.value)
             self.step()
             while not self.at_end():
                 next_term = self.stream.first
@@ -86,6 +105,9 @@ class Parser(object):
             message = ''.join(message_parts)
             term = KeywordSend(term, message, arguments)
         return term
+
+    def parse_expression(self):
+        return self.parse_keyword()
 
     def parse_method_header(self):
         term = self.stream.first

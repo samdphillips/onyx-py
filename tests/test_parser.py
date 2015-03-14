@@ -3,7 +3,7 @@ import unittest
 from onyx.term import BinarySend, Identifier, KeywordSend, UnarySend
 
 
-# noinspection PyPep8Naming
+# noinspection PyPep8Naming,PyAttributeOutsideInit
 class _ParserTestCase(object):
     term_cls = None
 
@@ -31,7 +31,7 @@ class _ParserTestCase(object):
         self.check()
 
 
-# noinspection PyPep8Naming
+# noinspection PyPep8Naming,PyAttributeOutsideInit
 class _FailingParserTestCase(object):
     def setUp(self):
         from onyx.util.stream import Stream
@@ -67,6 +67,7 @@ class TermTestCase(unittest.TestCase):
             term = Term('+', 'binsel')
             term.as_identifier()
 
+
 class ParsePrimaryId(_ParserTestCase, unittest.TestCase):
     read_string = 'name'
     parse_method = 'primary'
@@ -76,8 +77,28 @@ class ParsePrimaryId(_ParserTestCase, unittest.TestCase):
         self.assertEqual(self.term.name, 'name')
 
 
+class ParsePrimaryNested(_ParserTestCase, unittest.TestCase):
+    read_string = '(foo)'
+    parse_method = 'primary'
+    term_cls = Identifier
+
+    def check(self):
+        self.assertEqual(self.term.name, 'foo')
+
+
 class ParsePrimaryUnary(_ParserTestCase, unittest.TestCase):
     read_string = 'foo bar'
+    parse_method = 'primary'
+    term_cls = UnarySend
+
+    def check(self):
+        self.assertIsInstance(self.term.receiver, Identifier)
+        self.assertEqual(self.term.receiver.name, 'foo')
+        self.assertEqual(self.term.message, 'bar')
+
+
+class ParsePrimaryUnaryNested(_ParserTestCase, unittest.TestCase):
+    read_string = '(foo bar)'
     parse_method = 'primary'
     term_cls = UnarySend
 
