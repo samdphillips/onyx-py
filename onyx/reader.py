@@ -198,14 +198,14 @@ class Reader(object):
         self.step()
 
         terms = []
-        char_class = self.skip_spaces()
+        self.skip_spaces()
         while self.current_char() != end:
             if self.is_eof():
                 raise ReadError('eof encountered in compound (%s)' %
                                 repr(start))
             t = self.read_term()
             terms.append(t)
-            char_class = self.skip_spaces()
+            self.skip_spaces()
 
         self.step()
         return Term(terms, 'compound', start+end)
