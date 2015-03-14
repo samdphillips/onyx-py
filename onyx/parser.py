@@ -89,22 +89,24 @@ class Parser(object):
 
     def parse_keyword(self):
         term = self.parse_binary()
-        message_parts = []
+        name, arguments = self.parse_keyword_extension(self.parse_binary)
+
+        if name != "":
+            term = KeywordSend(term, name, arguments)
+        return term
+
+    def parse_keyword_extension(self, parse_argument):
+        name = []
         arguments = []
         while not self.at_end():
-            next_term = self.stream.first
-            if not next_term.is_keyword:
+            term = self.stream.first
+            if not term.is_keyword:
                 break
-            part = next_term.value
+            name.append(term.value)
             self.step()
-            argument = self.parse_binary()
-            message_parts.append(part)
-            arguments.append(argument)
-
-        if message_parts != []:
-            message = ''.join(message_parts)
-            term = KeywordSend(term, message, arguments)
-        return term
+            arguments.append(parse_argument())
+        name = ''.join(name)
+        return name, arguments
 
     def parse_cascade(self):
         term = self.parse_keyword()
@@ -114,31 +116,22 @@ class Parser(object):
             if not (next_term.is_delimiter and next_term.value == ';'):
                 break
             self.step()
-
             next_term = self.stream.first
             arguments = []
             name = next_term.value
             if next_term.is_id:
-                message_class = UnarySend
+                message = UnarySend(None, name, arguments)
             elif next_term.is_binsel:
-                message_class = BinarySend
                 self.step()
                 arguments.append(self.parse_primary())
+                message = BinarySend(None, name, arguments)
             elif next_term.is_keyword:
-                message_class = KeywordSend
-                name = []
-                while not self.at_end():
-                    next_term = self.stream.first
-                    if not next_term.is_keyword:
-                        break
-                    name.append(next_term.value)
-                    self.step()
-                    arguments.append(self.parse_binary())
-                name = ''.join(name)
+                name, arguments = \
+                    self.parse_keyword_extension(self.parse_binary)
+                message = KeywordSend(None, name, arguments)
             else:
                 raise ParseError('Expected message cascade part')
 
-            message = message_class(None, name, arguments)
             messages.append(message)
 
         if messages != []:
@@ -150,6 +143,12 @@ class Parser(object):
     def parse_expression(self):
         return self.parse_keyword()
 
+    def parse_identifier(self):
+        self.assert_term_kind('is_id')
+        identifier = self.stream.first.as_identifier()
+        self.step()
+        return identifier
+
     def parse_method_header(self):
         term = self.stream.first
         arguments = []
@@ -159,21 +158,10 @@ class Parser(object):
         elif term.is_binsel:
             name = term.value
             self.step()
-            self.assert_term_kind('is_id')
-            arguments.append(self.stream.first.as_identifier())
-            self.step()
+            arguments.append(self.parse_identifier())
         elif term.is_keyword:
-            name = []
-            while not self.at_end():
-                term = self.stream.first
-                if not term.is_keyword:
-                    break
-                name.append(term.value)
-                self.step()
-                self.assert_term_kind('is_id')
-                arguments.append(self.stream.first.as_identifier())
-                self.step()
-            name = ''.join(name)
+            name, arguments = \
+                self.parse_keyword_extension(self.parse_identifier)
         else:
             raise ParseError(
                 "Expected id, binary selector, or keyword. "
