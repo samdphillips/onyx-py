@@ -183,6 +183,23 @@ class ParseKeywordFailEnd(_FailingParserTestCase, unittest.TestCase):
     parse_method = 'keyword'
 
 
+class ParseCascade(_ParserTestCase, unittest.TestCase):
+    read_string = 'MessageNotUnderstood new receiver: self; message: aMessage'
+    parse_method = 'cascade'
+
+
+class ParseCascadePrimary(ParseKeywordPrimary, unittest.TestCase):
+    parse_method = 'cascade'
+
+
+class ParseCascadeBinary(ParseKeywordBinary, unittest.TestCase):
+    parse_method = 'cascade'
+
+
+class ParseCascadeKeyword(ParseKeywordBasic, unittest.TestCase):
+    parse_method = 'cascade'
+
+
 class ParseUnaryMethodHeader(_ParserTestCase, unittest.TestCase):
     read_string = 'foo'
     parse_method = 'method_header'

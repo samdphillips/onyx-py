@@ -36,6 +36,7 @@ class Identifier(object):
     def __repr__(self):
         return '<{0} {1!r}>'.format(self.__class__.__name__, self.name)
 
+
 class MessageSend(object):
     def __init__(self, receiver, message, arguments=None):
         self.receiver = receiver
@@ -56,3 +57,8 @@ class BinarySend(MessageSend):
 class KeywordSend(MessageSend):
     pass
 
+
+class CascadeSend(object):
+    def __init__(self, receiver, messages):
+        self.receiver = receiver
+        self.messages = messages

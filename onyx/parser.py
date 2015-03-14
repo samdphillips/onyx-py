@@ -1,6 +1,6 @@
 
 
-from .term import BinarySend, Identifier, KeywordSend, UnarySend
+from .term import BinarySend, CascadeSend, Identifier, KeywordSend, UnarySend
 from .util.stream import EmptyStreamError, Stream
 
 
@@ -104,6 +104,47 @@ class Parser(object):
         if message_parts != []:
             message = ''.join(message_parts)
             term = KeywordSend(term, message, arguments)
+        return term
+
+    def parse_cascade(self):
+        term = self.parse_keyword()
+        messages = []
+        while not self.at_end():
+            next_term = self.stream.first
+            if not (next_term.is_delimiter and next_term.value == ';'):
+                break
+            self.step()
+
+            next_term = self.stream.first
+            arguments = []
+            name = next_term.value
+            if next_term.is_id:
+                message_class = UnarySend
+            elif next_term.is_binsel:
+                message_class = BinarySend
+                self.step()
+                arguments.append(self.parse_primary())
+            elif next_term.is_keyword:
+                message_class = KeywordSend
+                name = []
+                while not self.at_end():
+                    next_term = self.stream.first
+                    if not next_term.is_keyword:
+                        break
+                    name.append(next_term.value)
+                    self.step()
+                    arguments.append(self.parse_binary())
+                name = ''.join(name)
+            else:
+                raise ParseError('Expected message cascade part')
+
+            message = message_class(None, name, arguments)
+            messages.append(message)
+
+        if messages != []:
+            receiver = term.receiver
+            term.receiver = None
+            term = CascadeSend(receiver, [term] + messages)
         return term
 
     def parse_expression(self):
