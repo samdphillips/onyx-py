@@ -184,7 +184,8 @@ class ParseKeywordFailEnd(_FailingParserTestCase, unittest.TestCase):
 
 
 class ParseCascade(_ParserTestCase, unittest.TestCase):
-    read_string = 'MessageNotUnderstood new receiver: self; message: aMessage'
+    read_string = ("MessageNotUnderstood new receiver: self; "
+                   "message: aMessage; signal")
     parse_method = 'cascade'
 
 

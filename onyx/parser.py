@@ -120,6 +120,7 @@ class Parser(object):
             arguments = []
             name = next_term.value
             if next_term.is_id:
+                self.step()
                 message = UnarySend(None, name, arguments)
             elif next_term.is_binsel:
                 self.step()
