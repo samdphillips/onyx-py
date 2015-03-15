@@ -234,3 +234,27 @@ class ParseKeywordMethodHeader(_ParserTestCase, unittest.TestCase):
         self.assertIsInstance(arguments[0], Identifier)
         self.assertEqual('aBlock', arguments[0].name)
 
+
+class ParseTemporaryVariables(_ParserTestCase, unittest.TestCase):
+    read_string = '|a b c|'
+    parse_method = 'temporary_variables'
+
+    def check(self):
+        self.assertEqual(3, len(self.term))
+
+
+class ParseTemporaryVariablesEmpty(_ParserTestCase, unittest.TestCase):
+    read_string = '| |'
+    parse_method = 'temporary_variables'
+
+    def check(self):
+        self.assertEqual([], self.term)
+
+
+class ParseTemporaryVariablesEmptyOneTerm(_ParserTestCase, unittest.TestCase):
+    read_string = '||'
+    parse_method = 'temporary_variables'
+
+    def check(self):
+        self.assertEqual([], self.term)
+

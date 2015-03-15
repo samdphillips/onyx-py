@@ -144,6 +144,22 @@ class Parser(object):
     def parse_expression(self):
         return self.parse_keyword()
 
+    def parse_temporary_variables(self):
+        term = self.stream.first
+        names = []
+        if term.is_binsel and term.value == '|':
+            self.step()
+            term = self.stream.first
+            while term.is_id:
+                names.append(self.parse_identifier())
+                term = self.stream.first
+            self.assert_term_kind('is_binsel')
+            self.assert_term_value('|')
+            self.step()
+        elif term.is_binsel and term.value == '||':
+            self.step()
+        return names
+
     def parse_identifier(self):
         self.assert_term_kind('is_id')
         identifier = self.stream.first.as_identifier()
