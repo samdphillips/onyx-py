@@ -43,10 +43,13 @@ class Parser(object):
             raise ParseError(
                 "Expected term kind {0!r}, got: {1}".format(kind, term))
 
-    def make_sub_parser(self, shape):
+    def subparse(self, shape, parse_name):
         self.assert_term_compound(shape)
         parser = self.__class__(self.stream.first.value)
-        return parser
+        parse_method = getattr(parser, parse_name)
+        term = parse_method()
+        parser.assert_at_end()
+        return term
 
     def parse_primary(self):
         try:
@@ -56,9 +59,7 @@ class Parser(object):
                 term = Identifier(term.value)
             elif term.is_compound:
                 if term.shape == '()':
-                    parser = self.make_sub_parser('()')
-                    term = parser.parse_expression()
-                    parser.assert_at_end()
+                    term = self.subparse('()', 'parse_expression')
                 else:
                     raise ParseError('should write this...')
             else:
