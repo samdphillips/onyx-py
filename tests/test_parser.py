@@ -1,6 +1,6 @@
 import unittest
 
-from onyx.term import BinarySend, Identifier, KeywordSend, UnarySend
+from onyx.term import AssignTerm, BinarySend, Identifier, KeywordSend, UnarySend
 
 
 # noinspection PyPep8Naming,PyAttributeOutsideInit
@@ -233,6 +233,12 @@ class ParseKeywordMethodHeader(_ParserTestCase, unittest.TestCase):
         self.assertEqual(1, len(arguments))
         self.assertIsInstance(arguments[0], Identifier)
         self.assertEqual('aBlock', arguments[0].name)
+
+
+class ParseAssignmentExpression(_ParserTestCase, unittest.TestCase):
+    read_string = 'a := b'
+    parse_method = 'expression'
+    term_cls = AssignTerm
 
 
 class ParseTemporaryVariables(_ParserTestCase, unittest.TestCase):

@@ -1,6 +1,5 @@
-
-
-from .term import BinarySend, CascadeSend, Identifier, KeywordSend, UnarySend
+from .term import (AssignTerm, BinarySend, CascadeSend, Identifier,
+                   KeywordSend, UnarySend)
 from .util.stream import EmptyStreamError, Stream
 
 
@@ -42,6 +41,11 @@ class Parser(object):
         if not value:
             raise ParseError(
                 "Expected term kind {0!r}, got: {1}".format(kind, term))
+
+    def peek_for_assignment(self):
+        if not self.stream.is_empty and self.stream.first.is_id:
+            rest = self.stream.rest
+            return not rest.is_empty and rest.first.is_assignment
 
     def subparse(self, shape, parse_name):
         self.assert_term_compound(shape)
@@ -143,7 +147,14 @@ class Parser(object):
         return term
 
     def parse_expression(self):
-        return self.parse_keyword()
+        if self.peek_for_assignment():
+            lhs = self.parse_identifier()
+            self.step()
+            return AssignTerm(lhs, self.parse_expression())
+        return self.parse_cascade()
+
+    def parse_statement(self):
+        return self.parse_expression()
 
     def parse_temporary_variables(self):
         term = self.stream.first

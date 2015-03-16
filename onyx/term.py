@@ -62,3 +62,9 @@ class CascadeSend(object):
     def __init__(self, receiver, messages):
         self.receiver = receiver
         self.messages = messages
+
+
+class AssignTerm(object):
+    def __init__(self, lhs, rhs):
+        self.lhs = lhs
+        self.rhs = rhs
