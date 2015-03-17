@@ -169,9 +169,17 @@ class ReadInteger(_ReadTerm, unittest.TestCase):
 class ReadAssign(_ReadTerm, unittest.TestCase):
     """read an assignment term"""
     read_string = ":="
-    reader_method = "assignment"
+    reader_method = "assignment_or_block_argument"
     term_type = 'assignment'
     term_value = None
+
+
+class ReadBlockArgument(_ReadTerm, unittest.TestCase):
+    """read a block argument"""
+    read_string = ":a"
+    reader_method = "assignment_or_block_argument"
+    term_type = 'block_argument'
+    term_value = 'a'
 
 
 class ReadTermSkipSpace(_ReadTerm, unittest.TestCase):

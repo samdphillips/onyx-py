@@ -123,7 +123,7 @@ class Reader(object):
         elif init_class == 'delimiter':
             return self.read_delimiter()
         elif init_class == 'assignment':
-            return self.read_assignment()
+            return self.read_assignment_or_block_argument()
         elif init_class == 'opener':
             return self.read_compound()
         elif init_class == 'closer':
@@ -167,17 +167,20 @@ class Reader(object):
             self.step()
         return Term(int(s), 'integer')
 
-    def read_id_or_kw(self):
+    def scan_id_or_kw(self):
         s = ''
         while self.is_idchar():
             s += self.current_char()
             self.step()
-
         kind = 'id'
         if self.current_char() == ':':
             s += self.current_char()
             self.step()
             kind = 'keyword'
+        return s, kind
+
+    def read_id_or_kw(self):
+        s, kind = self.scan_id_or_kw()
         return Term(s, kind)
 
     def read_binsel(self):
@@ -187,10 +190,21 @@ class Reader(object):
             self.step()
         return Term(s, 'binsel')
 
-    def read_assignment(self):
+    def read_assignment_or_block_argument(self):
         self.step()
-        self.step()
-        return Term(None, 'assignment')
+        if self.current_char() == '=':
+            term = Term(None, 'assignment')
+            self.step()
+        elif self.is_idchar():
+            value, kind = self.scan_id_or_kw()
+            if kind == 'keyword':
+                raise ReadError('expected id not keyword')
+            term = Term(value, 'block_argument')
+        else:
+            raise ReadError('Unexpected character: %s (%s)' %
+                            (repr(self.current_char()), self.init_class()))
+        return term
+
 
     def read_compound(self):
         start = self.current_char()

@@ -14,6 +14,7 @@ class Term(object):
     is_integer = False
     is_delimiter = False
     is_assignment = False
+    is_block_argument = False
 
     def __init__(self, value, flag, shape=None):
         self.value = value
