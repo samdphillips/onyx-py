@@ -1,5 +1,5 @@
-from .term import (AssignTerm, BinarySend, BlockTerm, CascadeSend, Identifier,
-                   KeywordSend, UnarySend)
+from .term import (AssignTerm, BinarySend, BlockTerm, CascadeSend, EscapeTerm,
+                   Identifier, KeywordSend, UnarySend)
 from .util.stream import EmptyStreamError, Stream
 
 
@@ -175,7 +175,12 @@ class Parser(object):
         return self.parse_cascade()
 
     def parse_statement(self):
-        return self.parse_expression()
+        wrapper = lambda x: x
+        term = self.stream.first
+        if term.is_delimiter and term.value == '^':
+            self.step()
+            wrapper = EscapeTerm
+        return wrapper(self.parse_expression())
 
     def parse_temporary_variables(self):
         term = self.stream.first

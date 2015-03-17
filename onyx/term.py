@@ -75,3 +75,7 @@ class BlockTerm(object):
         self.temporary_variables = temporary_variables
         self.statements = statements
 
+
+class EscapeTerm(object):
+    def __init__(self, term):
+        self.term = term
