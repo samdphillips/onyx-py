@@ -4,7 +4,6 @@ from onyx.term import (AssignTerm, BinarySend, BlockTerm, Identifier,
                        KeywordSend, UnarySend)
 
 
-
 # noinspection PyPep8Naming,PyAttributeOutsideInit
 class _ParserTestCase(object):
     term_cls = None
@@ -111,13 +110,48 @@ class ParsePrimaryUnaryNested(_ParserTestCase, unittest.TestCase):
 
 
 class ParseBlock(_ParserTestCase, unittest.TestCase):
-    read_string = '[ | e f | a b. c d ]'
-    parse_method = 'block'
+    read_string = '[ x ]'
+    parse_method = 'primary'
     term_cls = BlockTerm
 
 
-class ParsePrimaryBlock(ParseBlock):
+class ParseBlockWithTemps(_ParserTestCase, unittest.TestCase):
+    read_string = '[ | e f | a b. c d ]'
     parse_method = 'primary'
+    term_cls = BlockTerm
+
+    def check(self):
+        self.assertEqual(0, len(self.term.arguments))
+        self.assertEqual(2, len(self.term.temporary_variables))
+        self.assertEqual(2, len(self.term.statements))
+
+
+class ParseBlockWithArgs(_ParserTestCase, unittest.TestCase):
+    read_string = '[ :a :b | | c d | a]'
+    parse_method = 'primary'
+    term_cls = BlockTerm
+
+
+class ParseBlockWithArgs2(_ParserTestCase, unittest.TestCase):
+    read_string = '[ :a :b || c d | a]'
+    parse_method = 'primary'
+    term_cls = BlockTerm
+
+    def check(self):
+        self.assertEqual(2, len(self.term.arguments))
+        self.assertEqual(2, len(self.term.temporary_variables))
+        self.assertEqual(1, len(self.term.statements))
+
+
+class ParseBlockWithArgsNoTemps(_ParserTestCase, unittest.TestCase):
+    read_string = '[ :a :b | a]'
+    parse_method = 'primary'
+    term_cls = BlockTerm
+
+    def check(self):
+        self.assertEqual(2, len(self.term.arguments))
+        self.assertEqual(0, len(self.term.temporary_variables))
+        self.assertEqual(1, len(self.term.statements))
 
 
 class ParsePrimaryUnaryChain(_ParserTestCase, unittest.TestCase):

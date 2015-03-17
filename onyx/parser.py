@@ -1,5 +1,7 @@
+from itertools import chain
+
 from .term import (AssignTerm, BinarySend, BlockTerm, CascadeSend, EscapeTerm,
-                   Identifier, KeywordSend, UnarySend)
+                   Identifier, KeywordSend, Term, UnarySend)
 from .util.stream import EmptyStreamError, Stream
 
 
@@ -42,6 +44,11 @@ class Parser(object):
             raise ParseError(
                 "Expected term kind {0!r}, got: {1}".format(kind, term))
 
+    def push_term(self, value, kind):
+        term = Term(value, kind)
+        it = chain([term], self.stream)
+        self.stream = Stream.from_sequence(it)
+
     def peek_for_assignment(self):
         if not self.stream.is_empty and self.stream.first.is_id:
             rest = self.stream.rest
@@ -58,10 +65,29 @@ class Parser(object):
         self.step()
         return term
 
+    def parse_block_arguments(self):
+        arguments = []
+        if not self.at_end() and self.stream.first.is_block_argument:
+            while not self.at_end():
+                term = self.stream.first
+                if term.is_block_argument:
+                    arguments.append(term.as_identifier())
+                    self.step()
+                elif term.is_binsel and term.value == '|':
+                    self.step()
+                    break
+                elif term.is_binsel and term.value == '||':
+                    self.step()
+                    self.push_term('|', 'binsel')
+                    break
+                else:
+                    raise ParseError('not a block argument')
+        return arguments
+
     def parse_block(self):
-        temporary_variables, statements = \
-            self.subparse('[]', 'parse_executable_code')
-        return BlockTerm(temporary_variables, statements)
+        arguments = self.parse_block_arguments()
+        temporary_variables, statements = self.parse_executable_code()
+        return BlockTerm(arguments, temporary_variables, statements)
 
     def parse_executable_code(self):
         statements = []
@@ -85,7 +111,7 @@ class Parser(object):
                 if term.shape == '()':
                     term = self.subparse('()', 'parse_expression')
                 elif term.shape == '[]':
-                    term = self.parse_block()
+                    term = self.subparse('[]', 'parse_block')
                 else:
                     raise ParseError('should write this...')
             else:

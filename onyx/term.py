@@ -22,7 +22,7 @@ class Term(object):
         setattr(self, 'is_%s' % flag, True)
 
     def as_identifier(self):
-        if self.is_id:
+        if self.is_id or self.is_block_argument:
             return Identifier(self.value)
         raise TermError('Term is not an identifier', self)
 
@@ -72,7 +72,8 @@ class AssignTerm(object):
 
 
 class BlockTerm(object):
-    def __init__(self, temporary_variables, statements):
+    def __init__(self, arguments, temporary_variables, statements):
+        self.arguments = arguments
         self.temporary_variables = temporary_variables
         self.statements = statements
 

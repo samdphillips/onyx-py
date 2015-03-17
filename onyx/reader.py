@@ -205,7 +205,6 @@ class Reader(object):
                             (repr(self.current_char()), self.init_class()))
         return term
 
-
     def read_compound(self):
         start = self.current_char()
         end = self._closers[start]
