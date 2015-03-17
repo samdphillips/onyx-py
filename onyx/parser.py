@@ -1,4 +1,4 @@
-from .term import (AssignTerm, BinarySend, CascadeSend, Identifier,
+from .term import (AssignTerm, BinarySend, BlockTerm, CascadeSend, Identifier,
                    KeywordSend, UnarySend)
 from .util.stream import EmptyStreamError, Stream
 
@@ -53,7 +53,24 @@ class Parser(object):
         parse_method = getattr(parser, parse_name)
         term = parse_method()
         parser.assert_at_end()
+        self.step()
         return term
+
+    def parse_block(self):
+        temporary_variables, statements = \
+            self.subparse('[]', 'parse_executable_code')
+        return BlockTerm(temporary_variables, statements)
+
+    def parse_executable_code(self):
+        statements = []
+        temporary_variables = self.parse_temporary_variables()
+        while not self.at_end():
+            statement = self.parse_statement()
+            statements.append(statement)
+            if self.at_end() or not self.stream.first.value == '.':
+                break
+            self.step()
+        return temporary_variables, statements
 
     def parse_primary(self):
         try:
@@ -61,14 +78,16 @@ class Parser(object):
 
             if term.is_id:
                 term = Identifier(term.value)
+                self.step()
             elif term.is_compound:
                 if term.shape == '()':
                     term = self.subparse('()', 'parse_expression')
+                elif term.shape == '[]':
+                    term = self.parse_block()
                 else:
                     raise ParseError('should write this...')
             else:
                 raise ParseError('Expected primary')
-            self.step()
             while not self.at_end():
                 next_term = self.stream.first
                 if not next_term.is_id:

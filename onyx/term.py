@@ -68,3 +68,10 @@ class AssignTerm(object):
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
+
+
+class BlockTerm(object):
+    def __init__(self, temporary_variables, statements):
+        self.temporary_variables = temporary_variables
+        self.statements = statements
+

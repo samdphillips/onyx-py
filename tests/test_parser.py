@@ -1,6 +1,8 @@
 import unittest
 
-from onyx.term import AssignTerm, BinarySend, Identifier, KeywordSend, UnarySend
+from onyx.term import (AssignTerm, BinarySend, BlockTerm, Identifier,
+                       KeywordSend, UnarySend)
+
 
 
 # noinspection PyPep8Naming,PyAttributeOutsideInit
@@ -106,6 +108,16 @@ class ParsePrimaryUnaryNested(_ParserTestCase, unittest.TestCase):
         self.assertIsInstance(self.term.receiver, Identifier)
         self.assertEqual(self.term.receiver.name, 'foo')
         self.assertEqual(self.term.message, 'bar')
+
+
+class ParseBlock(_ParserTestCase, unittest.TestCase):
+    read_string = '[ | e f | a b. c d ]'
+    parse_method = 'block'
+    term_cls = BlockTerm
+
+
+class ParsePrimaryBlock(ParseBlock):
+    parse_method = 'primary'
 
 
 class ParsePrimaryUnaryChain(_ParserTestCase, unittest.TestCase):
