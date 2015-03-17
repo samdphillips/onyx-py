@@ -46,6 +46,8 @@ class Parser(object):
         if not self.stream.is_empty and self.stream.first.is_id:
             rest = self.stream.rest
             return not rest.is_empty and rest.first.is_assignment
+        return False
+
 
     def subparse(self, shape, parse_name):
         self.assert_term_compound(shape)
